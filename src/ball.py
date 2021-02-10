@@ -15,9 +15,7 @@ fig = plt.figure()
 ax = fig.add_subplot(111, autoscale_on=False, xlim=xlim, ylim=ylim)
 ax.grid()
 
-# in Python 2.7 we have to derive from object to have new-style classes
-# in Python 3 this is still valid, but not necessary, as all classes are new-style
-class Ball(object):
+class Ball():
     
     def __init__(self, xy, v):
         """
