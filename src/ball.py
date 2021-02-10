@@ -3,41 +3,61 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-# class Shape():
-
-#     def __init__(self, position):
-#         self.position = position
-
-
-# class Ball(Shape):
-
-#     def __init__(self, radius, centre):
-#         self.radius = radius
-#         super(Ball, self).__init__(centre)
-
-
-# c1 = Ball(1.0, (0.5, 1.0))
-# c2 = Ball(1.5, (-0.5, 2.0))
-# c3 = Ball(0.5, (0,0))
-
 
 # bounds of the room
 xlim = (0,30)
-ylim = (1,20)
+ylim = (0,20)
 
-# position of the ball
-xy = np.array((3.0,18.0))
-# velocity of the ball
-v = np.array((0,0.3))
-
+# 1 millisecond delta t
 delta_t = 0.001
 
 fig = plt.figure()
 ax = fig.add_subplot(111, autoscale_on=False, xlim=xlim, ylim=ylim)
 ax.grid()
 
-scatter, = ax.plot([], [], 'o', color='green', markersize=20)
+# in Python 2.7 we have to derive from object to have new-style classes
+# in Python 3 this is still valid, but not necessary, as all classes are new-style
+class Ball(object):
+    
+    def __init__(self, xy, v):
+        """
+        :param xy: Initial position.
+        :param v: Initial velocity.
+        """
+        self.xy = np.array(xy)
+        self.v = np.array(v)
+        
+        self.scatter, = ax.plot([], [], 'o', markersize=20)
+        
+    def update(self):
+        if self.xy[0] <= xlim[0]:
+            # hit the left wall, reflect x component
+            self.v[0] = np.abs(self.v[0])
+            
+        elif self.xy[0] >= xlim[1]:
+            self.v[0] = - np.abs(self.v[0])
+            
+        if self.xy[1] <= ylim[0]:
+            # hit the left wall, reflect y component
+            self.v[1] = np.abs(self.v[1])
+            
+        elif self.xy[1] >= ylim[1]:
+            self.v[1] = - np.abs(self.v[1])
+        
+        # delta t is 0.1
+        delta_v = delta_t
+        self.v += delta_v
+        
+        self.xy += self.v
+        
+        self.xy[0] = np.clip(self.xy[0], xlim[0], xlim[1])
+        self.xy[1] = np.clip(self.xy[1], ylim[0], ylim[1])
+        
+        self.scatter.set_data(self.xy)
+        
+        
 
+balls = [Ball((3.0,18.0), (0.2,0.3)), Ball((4.0,17.0), (-0.2,0.1)), Ball((1.0,19.0), (-0.3,0.5))]
 
 def init():
     return []
@@ -45,32 +65,12 @@ def init():
 def animate(t):
     # t is time in seconds
     global xy, v
-    
-    if xy[0] <= xlim[0]:
-        # hit the left wall, reflect x component
-        v[0] = np.abs(v[0])
-        
-    elif xy[0] >= xlim[1]:
-        v[0] = - np.abs(v[0])
-        
-    if xy[1] <= ylim[0]:
-        v[1] = np.abs(v[1])
-        
-    elif xy[1] >= ylim[1]:
-        v[1] = - np.abs(v[1])
-    
-    # delta t is 0.1
-    delta_v = delta_t 
-    v += delta_v
-    
-    xy += v
-    
-    xy[0] = np.clip(xy[0], xlim[0], xlim[1])
-    xy[1] = np.clip(xy[1], ylim[0], ylim[1])
 
-    scatter.set_data(xy)
+    for ball in balls:
+        ball.update()
+    
     # have to return an iterable
-    return scatter,
+    return [ball.scatter for ball in balls]
 
 # interval in milliseconds
 # we're watching in slow motion (delta t is shorter than interval)
