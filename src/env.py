@@ -1,7 +1,16 @@
 import sys, time, os
 
 def animation(counter, length):
-    os.system('tput reset')
+
+    # for windows OS 
+    if os.name =="nt": 
+        os.system("cls") 
+          
+    # for linux / Mac OS 
+    else: 
+        os.system("clear") 
+
+    
     stage = counter % (length * 2)
     if stage < length + 1:
         left_spaces = stage
