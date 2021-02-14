@@ -1,48 +1,25 @@
-import global_var
+import numpy as np
 
-class Object() :
+class Object:
 
-    def __init__(self, character, posx, posy):
-        self._posx = posx
-        self._posy = posy
-        self._width = len(character[0])
-        self._height = len(character)
-        self._shape = character
+    def __init__(self, rep=np.array([[" "]]), position=[0,0], velocity=3, gravity=0, color=np.array([[""]])):
+        self.position = position
+        self.rep = rep
+        self.color = color
+        self.velocity = velocity
+        self.gravity = gravity
+        self.shape = self.rep.shape
 
-    def render(self):
-        for i in range(self._width):
-            for j in range(self._height):
-                global_var.mp.matrix[j+self._posy][i+self._posx] = self._shape[j][i]
+    def update(self):
+        self.position[0] = self.velocity
+        self.position[1] = self.gravity
 
-    def xget(self):
-        return self._posx
-    
-    def yget(self):
-        return self._posy
+    @staticmethod
+    def from_string(rep, position=[0,0], velocity=1, gravity=0, color=""):
+        arr = rep.split("\n")[1:-1]
+        maxlen = len(max(arr, key=len))
 
+        grid = np.array([list(x + (' ' * (maxlen - len(x)))) for x in arr])
+        col = np.full(grid.shape, color)
 
-class Ball(Object):
-
-    def __init__(self, character, x, y, lives):
-        super().__init__(character, x, y)
-        self._lives = 5
-        self._bricks = 50
-        self._score = 0
-
-    def lives(self):
-        return self._lives
-
-    def bricks(self):
-        return self._bricks
-
-    def score(self):
-        return self._score
-
-    def red_lives(self):
-        self._lives -= 1
-
-    def red_bricks(self):
-        self._bricks -= 1
-
-    def inc_score(self):
-        self._score += 10
+        return Object(grid, position, velocity, gravity, col)

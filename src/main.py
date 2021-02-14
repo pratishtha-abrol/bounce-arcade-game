@@ -1,9 +1,9 @@
-import global_var 
-import global_func
-import os
+import colorama
 
-if (os.name == "posix"):
-    os.system("clear")
-else:
-    os.system("cls")
-global_func.print_board()
+from game import Game
+
+if __name__ == "__main__":
+    colorama.init()
+
+    game = Game()
+    game.start()
