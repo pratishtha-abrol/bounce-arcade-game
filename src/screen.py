@@ -1,18 +1,19 @@
 import numpy as np
 import colorama
+import sys
 
 import config
 
 class Screen:
 
     def __init__(self):
-        self.width, self.height = config.SCREEN_WIDTH, config.SCREEN_HEIGHT
+        self.width, self.height = config.SCREEN_WIDTH-1, config.SCREEN_HEIGHT-1
         self.clear()
 
     def clear(self):
         self.display = np.full((self.height, self.width), " ")
-        self.bg = np.full((self.height, self.width), config.bg_col)
         self.fg = np.full((self.height, self.width), config.fg_col)
+        self.bg = np.full((self.height, self.width), config.bg_col)
 
     def draw(self, obj):
         x, y = obj.position
@@ -22,12 +23,9 @@ class Screen:
         self.fg[y:y+h, x:x+w] = obj.color
 
     def show(self):
-        out = ""
-
         for i in range(self.height):
             for j in range(self.width):
-                out += self.bg[i][j] + self.fg[i][j] + self.display[i][j]
-            print(out)
-            out = ""
+                sys.stdout.write(self.bg[i][j] + self.fg[i][j] + self.display[i][j])
+            sys.stdout.write("|" + colorama.Back.RESET + "\n")
 
-        print(out)
+        sys.stdout.write(colorama.Style.RESET_ALL)
