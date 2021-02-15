@@ -10,7 +10,7 @@ SLIDER = r"""
 class Bar:
 
     def __init__(self, rep, position, color):
-        self.bar = Object.from_string(rep, position=position, velocity=np.array([0.,0.]), force=np.array([0.,0.]), gravity=0.5, color=color)
+        self.bar = Object.from_string(rep, position=position, velocity=np.array([0.,0.]), color=color)
 
     def move(self, key):
         pass
@@ -25,7 +25,7 @@ class Bar:
 class Slider(Bar):
 
     def __init__(self):
-        super().__init__(SLIDER, position=np.array([10,10]), color=colorama.Back.YELLOW)
+        super().__init__(SLIDER, position=np.array([100,45]), color=colorama.Back.YELLOW)
         self.controls = ["a", "d"]
 
     def move(self, key):
@@ -36,3 +36,8 @@ class Slider(Bar):
                 self.bar.velocity[0] -= 1
             elif key == "d":
                 self.bar.velocity[0] += 1
+
+class Brick(Bar):
+
+    def __init__(self):
+        super().__init__(SLIDER, position=np.array([100, 30]), color=colorama.Back.RED)
