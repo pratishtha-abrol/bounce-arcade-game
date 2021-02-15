@@ -25,8 +25,8 @@ class Game:
 
     def clear(self):
         self.screen.clear()
-        sp.call("clear", shell=True)
-        # print("\033[0;0H")
+        # sp.call("clear", shell=True)
+        print("\033[0;0H")
 
     def start(self):
         kb = util.KBHit()
