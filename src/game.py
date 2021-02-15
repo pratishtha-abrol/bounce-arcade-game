@@ -8,7 +8,6 @@ import numpy as np
 import subprocess as sp
 
 import config
-import util
 
 from slider import Slider, Brick
 from screen import Screen
@@ -26,6 +25,7 @@ class Game:
     def clear(self):
         self.screen.clear()
         sp.call("clear", shell=True)
+        # print("\033[0;0H")
 
     def start(self):
         while True:
@@ -35,4 +35,5 @@ class Game:
             self.screen.draw(self.ball.get_object())
             self.screen.draw(self.brick.get_object())
             self.slider.update()
+            self.ball.update()
             self.screen.show()

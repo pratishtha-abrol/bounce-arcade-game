@@ -12,21 +12,7 @@ class Object:
         self.color = color
 
     def update(self):
-        on_ground = self.position[1] + self.height >= \
-                        config.HEIGHT - config.SLIDER_LOC
-
-
-        # if is colliding with roof
-        if self.position[1] == 0:
-            self.velocity[1] = max(0, self.velocity[1])
-
-        if on_ground:
-            self.velocity[1] = min(0, self.velocity[1])
-
-
-        tmp_pos = self.position + self.velocity
-        self.position[0] = int(np.round(np.clip(tmp_pos[0], 0, config.WIDTH)))
-        self.position[1] = int(np.round(np.clip(tmp_pos[1], 0, config.HEIGHT - config.SLIDER_LOC)))
+        pass
 
     @staticmethod
     def from_string(rep, position=np.array([0,0]), velocity=np.array([0.,0.]), color=""):
