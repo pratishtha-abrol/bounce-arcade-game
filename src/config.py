@@ -1,11 +1,18 @@
+"""
+configuration parameters
+"""
+
 import os
 import colorama
 
 SCREEN_HEIGHT, SCREEN_WIDTH = [int(x) for x in os.popen("stty size", "r").read().split()]
+HEIGHT = SCREEN_HEIGHT -1
+WIDTH = SCREEN_WIDTH -1
+SLIDER_LOC = 5
 
 # delay between frames
-delay = 0.1
+delay = 0.05
 
 # system colors
-bg_col = colorama.Back.BLACK
-fg_col = colorama.Fore.WHITE
+BG_COL = colorama.Back.BLACK
+FG_COL = colorama.Fore.WHITE

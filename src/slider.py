@@ -1,17 +1,18 @@
 import colorama
+import numpy as np
 
 from objects import Object
 
 SLIDER = r"""
-=====
+          
 """
 
 class Bar:
 
     def __init__(self, rep, position, color):
-        self.bar = Object.from_string(rep, position=position, velocity=0, gravity=1, color=color)
+        self.bar = Object.from_string(rep, position=position, velocity=np.array([0.,0.]), force=np.array([0.,0.]), gravity=0.5, color=color)
 
-    def move(self, direction=0):
+    def move(self, key):
         pass
 
     def update(self):
@@ -22,5 +23,16 @@ class Bar:
 
 
 class Slider(Bar):
+
     def __init__(self):
-        super().__init__(SLIDER, [30,10], colorama.Fore.YELLOW)
+        super().__init__(SLIDER, position=np.array([10,10]), color=colorama.Back.YELLOW)
+        self.controls = ["a", "d"]
+
+    def move(self, key):
+        key = key.lower()
+
+        if key in self.controls:
+            if key == "a":
+                self.bar.velocity[0] -= 1
+            elif key == "d":
+                self.bar.velocity[0] += 1

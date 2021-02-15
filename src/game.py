@@ -1,15 +1,22 @@
+"""
+code to run the game
+"""
+
 import time
 import colorama
 import numpy as np
 import subprocess as sp
 
 import config
+import util
+
 from slider import Slider
 from screen import Screen
 
 class Game:
     
     def __init__(self):
+        print("\033[?25l\033[2J", end='')
         self.screen = Screen()
         self.slider = Slider()
 

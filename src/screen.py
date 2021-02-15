@@ -12,12 +12,12 @@ class Screen:
 
     def clear(self):
         self.display = np.full((self.height, self.width), " ")
-        self.fg = np.full((self.height, self.width), config.fg_col)
-        self.bg = np.full((self.height, self.width), config.bg_col)
+        self.fg = np.full((self.height, self.width), config.FG_COL)
+        self.bg = np.full((self.height, self.width), config.BG_COL)
 
     def draw(self, obj):
         x, y = obj.position
-        h, w = obj.shape
+        h, w = obj.height, obj.width
 
         self.display[y:y+h, x:x+w] = obj.rep
         self.fg[y:y+h, x:x+w] = obj.color
