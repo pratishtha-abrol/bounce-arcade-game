@@ -4,44 +4,41 @@ import termios
 import atexit
 from select import select
 
+class KBHit:
+    """
+    Class to handle keyboard input
+    """
 
-class KBHit(object):
     def __init__(self):
-        if os.name == 'nt':
-            pass
-        else:
-            self.filed = sys.stdin.fileno()
-            self.new_term = termios.tcgetattr(self.filed)
-            self.old_term = termios.tcgetattr(self.filed)
+        # Save the terminal settings
+        self.__fd = sys.stdin.fileno()
+        self.__new_term = termios.tcgetattr(self.__fd)
+        self.__old_term = termios.tcgetattr(self.__fd)
 
-            self.new_term[3] = (self.new_term[3] & ~
-                                termios.ICANON & ~termios.ECHO)
-            termios.tcsetattr(self.filed, termios.TCSAFLUSH, self.new_term)
-            atexit.register(self.set_normal_term)
-            self.temp = 1
+        # New terminal setting unbuffered
+        self.__new_term[3] = (self.__new_term[3] & ~termios.ICANON & ~termios.ECHO)
+        termios.tcsetattr(self.__fd, termios.TCSAFLUSH, self.__new_term)
+
+        # Support normal-terminal reset at exit
+        atexit.register(self.set_normal_term)
+
 
     def set_normal_term(self):
-        self.temp = 0
-        termios.tcsetattr(self.filed, termios.TCSAFLUSH, self.old_term)
+        termios.tcsetattr(self.__fd, termios.TCSAFLUSH, self.__old_term)
 
-    def getch(self):
-        self.temp = 1
+
+    @staticmethod
+    def getch():
+        # print("Character: ", sys.stdin.read(1))
         return sys.stdin.read(1)
 
-    def getarrow(self):
-        self.temp = 0
-        car = sys.stdin.read(3)[2]
-        vals = [65, 67, 66, 68]
-        return vals.index(ord(car.decode('utf-8')))
 
-    def kbhit(self):
-        draw, dwarf, deaf = select([sys.stdin], [], [], 0)
-        self.temp = dwarf
-        self.temp = deaf
-        return draw != []
+    @staticmethod
+    def kbhit():
+        return select([sys.stdin], [], [], 0)[0] != []
 
-    def getinput(self):
-        if self.kbhit():
-            return self.getch()
-        else:
-            return ""
+    @staticmethod
+    def clear():
+        termios.tcflush(sys.stdin, termios.TCIFLUSH)
+
+

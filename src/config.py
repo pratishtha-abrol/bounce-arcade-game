@@ -18,3 +18,6 @@ delay = 0.05
 # system colors
 BG_COL = colorama.Back.BLACK
 FG_COL = colorama.Fore.WHITE
+
+
+QUIT_CHAR = "q"

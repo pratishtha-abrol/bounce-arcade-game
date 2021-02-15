@@ -21,7 +21,7 @@ class Bar:
         pass
 
     def update(self):
-        self.bar.update()
+        pass
 
     def get_object(self):
         return self.bar
@@ -34,8 +34,6 @@ class Slider(Bar):
         self.controls = ["a", "d"]
 
     def move(self, key):
-        key = kb.getinput()
-
         if key in self.controls:
             if key == "a":
                 self.bar.position[0] -= 2
