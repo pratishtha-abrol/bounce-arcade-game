@@ -21,3 +21,6 @@ FG_COL = colorama.Fore.WHITE
 
 
 QUIT_CHAR = "q"
+
+LIVES = 5
+SCORE = 0

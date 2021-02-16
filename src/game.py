@@ -41,6 +41,8 @@ class Game:
             else:
                 kb.clear()
 
+            self.createheader()
+
             self.screen.draw(self.slider.get_object())
             self.screen.draw(self.ball.get_object())
             self.screen.draw(self.brick.get_object())
@@ -55,3 +57,8 @@ class Game:
         else:
             self.slider.move(ch)
         return False
+
+    def createheader(self):
+        print(colorama.Style.BRIGHT + colorama.Back.BLACK + colorama.Fore.CYAN + "||  BOUNCE  ||" + colorama.Fore.WHITE + "\t\tLIVES: ", config.LIVES, "\tSCORE: ", config.SCORE)
+        print("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+

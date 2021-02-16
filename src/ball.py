@@ -21,7 +21,7 @@ class Circle():
         # self.circle.update()
 
         # check if top hit
-        if(self.circle.position[1] <= 0):
+        if(self.circle.position[1] <= 5):
             self.circle.velocity[1] -= -1
 
         # check sides
