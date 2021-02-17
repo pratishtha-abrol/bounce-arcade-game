@@ -19,6 +19,7 @@ class Game:
         self.screen = Screen()
         self.paddle = Paddle()
         self.ball = Ball()
+        self.brickarr = self.add_bricks()
 
         self.score = 0
         self.frame_count = 0
@@ -26,8 +27,13 @@ class Game:
         self.__objects = {
             "ball": [self.ball],
             "paddle": [self.paddle],
-            "bricks": []
+            "bricks": [self.brickarr]
         }
+
+        self.__colliders = [
+            ("ball", "paddle", True),
+            # ("ball", "bricks", True)
+        ]
 
     def clear(self):
         self.screen.clear()
@@ -37,14 +43,10 @@ class Game:
     def start(self):
         kb = util.KBHit()
 
-        brickarr = self.add_bricks()
-
         while True:
             self.frame_count += 1
             time.sleep(config.DELAY)
             self.clear()
-
-            self.show_score()
 
             if kb.kbhit():
                 if self.manage_keys(kb.getch()):
@@ -53,14 +55,17 @@ class Game:
             else:
                 kb.clear()
 
+            self.detect_collisions()
+
             # brickarr = self.add_bricks()
-            for brick in brickarr:
+            for brick in self.brickarr:
                 self.screen.draw(brick)
 
             self.screen.draw(self.paddle)
             self.screen.draw(self.ball)
             
             self.screen.show()
+            self.show_score()
             self.ball.update()
 
     def manage_keys(self, ch):
@@ -77,22 +82,48 @@ class Game:
     def add_bricks(self):
         brick =[]
         i=0
-        for x in range(5, config.WIDTH-5, 10):
-            if(i==50):
-                break
+        count = 0
+        for x in range(max(5, config.WIDTH//2 - 60), min(config.WIDTH//2 + 60, config.WIDTH - 5), 10):
             xf = util.randint(0,1)
             if xf == 1:
                 for y in range(13, config.HEIGHT- 20):
+                    if i==50:
+                        break
                     yf = util.randint(0,1)
                     if yf == 1:
-                        brick.append(Brick(np.array([x,y]), util.randint(1, 4)))
+                        s = util.randint(1, 4)
+                        brick.append(Brick(np.array([x,y]), s))
                         i += 1
+                        if s != 4:
+                            count += 1
 
-        config.BRICKS_LEFT = i
+        config.BRICKS_LEFT = count
         return brick
 
     def show_score(self):
-        print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t|| BOUNCE ||\t\tSCORE: ", self.score, "\tLIVES: ", "❤️  "*config.LIVES)
-        print("="*config.WIDTH)
+        print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
+        print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t|| BOUNCE ||\t\tSCORE: ", self.score, "\tBRICKS LEFT: ", config.BRICKS_LEFT, "\tLIVES: ", "❤️  "*config.LIVES)
+        print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
 
-            
+    def detect_collisions(self):
+        for pairs in self.__colliders:
+            for hitter in self.__objects[pairs[0]]:
+                for target in self.__objects[pairs[1]]:
+                    pos_h = hitter.get_position()
+                    pos_t = target.get_position()
+
+                    height_h, width_h = hitter.get_shape()
+                    height_t, width_t = target.get_shape()
+
+                    minx = min(pos_h[0], pos_t[0])
+                    maxx = max(pos_h[0] + width_h, pos_t[0] + width_t)
+
+                    miny = min(pos_h[1], pos_t[1])
+                    maxy = max(pos_h[1] + height_h, pos_t[1] + height_t)
+
+                    if maxx - minx >= width_h + width_t \
+                            or maxy - miny >= height_h + height_t:
+                        continue
+
+                    if pairs[2]:
+                        self.ball.reflect()

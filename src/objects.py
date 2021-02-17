@@ -124,6 +124,10 @@ class CircleObject(Object):
         # else:
         self.position += self.velocity
 
+    def reflect(self):
+        self.velocity *= -1
+        self.position += self.velocity
+
 
 class Ball(CircleObject):
     def __init__(self):
