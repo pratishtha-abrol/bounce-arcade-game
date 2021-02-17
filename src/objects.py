@@ -57,30 +57,47 @@ class Paddle(BarObject):
 
 
 class Brick(Object):
-    def __init__(self, position):
-        grid = util.str_to_array(graphics.BRICK)
-        grid_col = util.tup_to_array(grid.shape, (colorama.Back.YELLOW, colorama.Fore.BLACK))
+    def __init__(self, position, strength):
+        self.strength = strength
+        if self.strength == 1:
+            grid = util.str_to_array(graphics.BRICK)
+            grid_col = util.tup_to_array(grid.shape, (colorama.Back.MAGENTA, colorama.Fore.BLACK))
+        elif self.strength == 2:
+            grid = util.str_to_array(graphics.BRICK)
+            grid_col = util.tup_to_array(grid.shape, (colorama.Back.GREEN, colorama.Fore.BLACK))
+        elif self.strength == 3:
+            grid = util.str_to_array(graphics.BRICK)
+            grid_col = util.tup_to_array(grid.shape, (colorama.Back.BLUE, colorama.Fore.BLACK))
+        else:
+            grid = util.str_to_array(graphics.UNBREAKABLE_BRICK)
+            grid_col = util.tup_to_array(grid.shape, (colorama.Back.WHITE, colorama.Fore.BLACK))
+
+
+
         super().__init__(grid, position, grid_col)
 
 
-class BrickArray():
-    def __init__(self, position, shape):
-        self.position = position
-        self.shape = shape
+# class BrickArray():
+#     def __init__(self, position, shape):
+#         self.position = position
+#         self.shape = shape
 
-        minx, miny = position
-        maxx, maxy = minx + shape[1], miny + shape[0]
+#         minx, miny = position
+#         maxx, maxy = minx + 10*shape[1], miny + shape[0]
 
-        minx = int(minx)
-        maxx = int(maxx)
-        miny = int(miny)
-        maxy = int(maxy)
+#         minx = int(minx)
+#         maxx = int(maxx)
+#         miny = int(miny)
+#         maxy = int(maxy)
 
-        self.bricks = []
+#         self.bricks = []
 
-        for _x in range(minx, maxx):
-            for _y in range(miny, maxy):
-                self.bricks.append(Brick(np.array(_x, _y)))
+#         for _x in range(minx, maxx, 10):
+#             for _y in range(miny, maxy):
+#                 self.bricks.append(Brick(np.array((_x, _y), dtype='float64')))
+
+#     def get_items(self):
+#         return self.bricks
 
 
 class CircleObject(Object):
@@ -111,7 +128,7 @@ class CircleObject(Object):
 class Ball(CircleObject):
     def __init__(self):
         position = np.array([config.PADDLE_X+4, config.PADDLE_Y-1])
-        velocity = np.array([-5,-1])
+        velocity = np.array([0,-1])
         rep = util.str_to_array(graphics.BALL)
         color = util.tup_to_array(rep.shape, (colorama.Back.BLACK, colorama.Fore.WHITE))
 

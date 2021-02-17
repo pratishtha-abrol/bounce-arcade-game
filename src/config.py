@@ -31,3 +31,4 @@ RELEASE_CHAR = " "
 # game config
 LIVES = 5
 SCORE = 0
+BRICKS_LEFT = 0

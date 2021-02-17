@@ -10,7 +10,7 @@ import config
 import util
 
 from screen import Screen
-from objects import Paddle, Ball
+from objects import Paddle, Ball, Brick
 
 class Game:
     
@@ -19,6 +19,9 @@ class Game:
         self.screen = Screen()
         self.paddle = Paddle()
         self.ball = Ball()
+
+        self.score = 0
+        self.frame_count = 0
 
         self.__objects = {
             "ball": [self.ball],
@@ -34,7 +37,10 @@ class Game:
     def start(self):
         kb = util.KBHit()
 
+        brickarr = self.add_bricks()
+
         while True:
+            self.frame_count += 1
             time.sleep(config.DELAY)
             self.clear()
 
@@ -45,6 +51,9 @@ class Game:
             else:
                 kb.clear()
 
+
+            for brick in brickarr:
+                self.screen.draw(brick)
 
             self.screen.draw(self.paddle)
             self.screen.draw(self.ball)
@@ -61,3 +70,20 @@ class Game:
         else:
             self.paddle.move(ch)
         return False
+
+    def add_bricks(self):
+        brick =[]
+        i=0
+        for x in range(5, config.WIDTH-5, 10):
+            if(i==50):
+                break
+            xf = util.randint(0,1)
+            if xf == 1:
+                for y in range(13, config.HEIGHT- 20):
+                    yf = util.randint(0,1)
+                    if yf == 1:
+                        brick.append(Brick(np.array([x,y]), util.randint(1, 4)))
+                        i += 1
+
+        config.BRICKS_LEFT = i
+        return brick

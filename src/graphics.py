@@ -41,3 +41,7 @@ BOOST_BRICK = r"""
 EXPLOSIVE_BRICK = r"""
 |xx(!!)xx|
 """
+
+UNBREAKABLE_BRICK = r"""
+|HHHHHHHH|
+"""
