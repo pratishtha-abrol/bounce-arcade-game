@@ -5,23 +5,26 @@ code to run the game
 import time
 import colorama
 import numpy as np
-import subprocess as sp
-
+import random
 import config
 import util
 
-from slider import Slider, Brick
 from screen import Screen
-from ball import Ball
+from objects import Paddle, Ball
 
 class Game:
     
     def __init__(self):
         print("\033[?25l\033[2J", end='')
         self.screen = Screen()
-        self.slider = Slider()
+        self.paddle = Paddle()
         self.ball = Ball()
-        self.brick = Brick()
+
+        self.__objects = {
+            "ball": [self.ball],
+            "paddle": [self.paddle],
+            "bricks": []
+        }
 
     def clear(self):
         self.screen.clear()
@@ -32,33 +35,29 @@ class Game:
         kb = util.KBHit()
 
         while True:
-            time.sleep(config.delay)
+            time.sleep(config.DELAY)
             self.clear()
 
             if kb.kbhit():
                 if self.manage_keys(kb.getch()):
+                    print(colorama.Fore.RED + "YOU QUIT || SCORE: ", config.SCORE)
                     break
             else:
                 kb.clear()
 
-            self.createheader()
 
-            self.screen.draw(self.slider.get_object())
-            self.screen.draw(self.ball.get_object())
-            self.screen.draw(self.brick.get_object())
-            self.slider.update()
-            self.ball.update()
+            self.screen.draw(self.paddle)
+            self.screen.draw(self.ball)
             self.screen.show()
+            self.ball.update()
 
     def manage_keys(self, ch):
         if ch == config.QUIT_CHAR:
             return True
 
+        # elif ch == config.RELEASE_CHAR:
+        #     self.ball.update()
+
         else:
-            self.slider.move(ch)
+            self.paddle.move(ch)
         return False
-
-    def createheader(self):
-        print(colorama.Style.BRIGHT + colorama.Back.BLACK + colorama.Fore.CYAN + "||  BOUNCE  ||" + colorama.Fore.WHITE + "\t\tLIVES: ", config.LIVES, "\tSCORE: ", config.SCORE)
-        print("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
-

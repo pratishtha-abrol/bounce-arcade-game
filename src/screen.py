@@ -3,6 +3,7 @@ import colorama
 import sys
 
 import config
+import util
 
 class Screen:
 
@@ -12,20 +13,30 @@ class Screen:
 
     def clear(self):
         self.display = np.full((self.height, self.width), " ")
-        self.fg = np.full((self.height, self.width), config.FG_COL)
-        self.bg = np.full((self.height, self.width), config.BG_COL)
+        self.color = util.tup_to_array((self.height, self.width), (config.BG_COL, config.FG_COL))
 
-    def draw(self, obj):
-        x, y = obj.position
-        h, w = obj.height, obj.width
+    def draw(self, obj, frame=0):
+        _x, _y = obj.get_position()
+        _h, _w = obj.get_shape()
+        _x = int(_x)
+        _y = int(_y)
+        _h = int(_h)
+        _w = int(_w)
 
-        self.display[y:y+h, x:x+w] = obj.rep
-        self.fg[y:y+h, x:x+w] = obj.color
+        disp, color = obj.get_rep(frame)
+
+        disp = disp[:, max(0, -_x):min(config.WIDTH - _x, _w)]
+        color = color[:, max(0, -_x):min(config.WIDTH - _x, _w)]
+
+        self.display[_y:_y+_h, max(0, _x):min(_x+_w, config.WIDTH)] = disp
+        self.color[_y:_y+_h, max(0, _x):min(_x+_w, config.WIDTH)] = color
 
     def show(self):
+        out = ""
+
         for i in range(self.height):
             for j in range(self.width):
-                sys.stdout.write(self.bg[i][j] + self.fg[i][j] + self.display[i][j])
-            sys.stdout.write("|" + colorama.Back.RESET + "\n")
+                out += "".join(self.color[i][j]) + self.display[i][j]
+            out += "\n"
 
-        sys.stdout.write(colorama.Style.RESET_ALL)
+        sys.stdout.write(out + colorama.Style.RESET_ALL)
