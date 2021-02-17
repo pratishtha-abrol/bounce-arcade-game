@@ -126,4 +126,7 @@ class Game:
                         continue
 
                     if pairs[2]:
-                        self.ball.reflect()
+                        if pos_h[0] == pos_t[0]+4:
+                            self.ball.reflect()
+                        else:
+                            self.ball.angle_reflect(pos_h[0] - pos_t[0] - 4)

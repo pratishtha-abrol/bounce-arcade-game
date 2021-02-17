@@ -128,6 +128,11 @@ class CircleObject(Object):
         self.velocity *= -1
         self.position += self.velocity
 
+    def angle_reflect(self, angle):
+        self.velocity[0] += angle
+        self.velocity[1] *= -1
+        self.position += self.velocity
+
 
 class Ball(CircleObject):
     def __init__(self):

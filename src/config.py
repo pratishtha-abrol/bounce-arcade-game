@@ -18,7 +18,7 @@ MIN_HEIGHT = SCOREBOARD_HEIGHT = 3
 MAX_HEIGHT = HEIGHT - PADDLE_Y
 
 # delay between frames
-DELAY = 0.1
+DELAY = 0.05
 
 # system colors
 BG_COL = colorama.Back.BLACK
