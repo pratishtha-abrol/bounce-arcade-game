@@ -77,27 +77,30 @@ class Brick(Object):
         super().__init__(grid, position, grid_col)
 
 
-# class BrickArray():
-#     def __init__(self, position, shape):
-#         self.position = position
-#         self.shape = shape
+class BrickArray():
+    def __init__(self):
+        self.bricks = []
 
-#         minx, miny = position
-#         maxx, maxy = minx + 10*shape[1], miny + shape[0]
+        i=0
+        count = 0
+        for x in range(max(5, config.WIDTH//2 - 60), min(config.WIDTH//2 + 60, config.WIDTH - 5), 10):
+            xf = util.randint(0,1)
+            if xf == 1:
+                for y in range(13, config.HEIGHT- 20):
+                    if i==50:
+                        break
+                    yf = util.randint(0,1)
+                    if yf == 1:
+                        s = util.randint(1, 4)
+                        self.bricks.append(Brick(np.array([x,y]), s))
+                        i += 1
+                        if s != 4:
+                            count += 1
 
-#         minx = int(minx)
-#         maxx = int(maxx)
-#         miny = int(miny)
-#         maxy = int(maxy)
+        config.BRICKS_LEFT = count
 
-#         self.bricks = []
-
-#         for _x in range(minx, maxx, 10):
-#             for _y in range(miny, maxy):
-#                 self.bricks.append(Brick(np.array((_x, _y), dtype='float64')))
-
-#     def get_items(self):
-#         return self.bricks
+    def get_items(self):
+        return self.bricks
 
 
 class CircleObject(Object):
@@ -129,7 +132,7 @@ class CircleObject(Object):
         self.position += self.velocity
 
     def angle_reflect(self, angle):
-        self.velocity[0] += angle
+        self.velocity[0] += angle // 2
         self.velocity[1] *= -1
         self.position += self.velocity
 

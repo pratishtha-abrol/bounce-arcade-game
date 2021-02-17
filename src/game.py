@@ -27,12 +27,12 @@ class Game:
         self.__objects = {
             "ball": [self.ball],
             "paddle": [self.paddle],
-            "bricks": [self.brickarr]
+            "bricks": self.brickarr
         }
 
         self.__colliders = [
             ("ball", "paddle", True),
-            # ("ball", "bricks", True)
+            ("ball", "bricks", True)
         ]
 
     def clear(self):
@@ -109,24 +109,57 @@ class Game:
         for pairs in self.__colliders:
             for hitter in self.__objects[pairs[0]]:
                 for target in self.__objects[pairs[1]]:
-                    pos_h = hitter.get_position()
-                    pos_t = target.get_position()
+                    if(target == "bricks"):
+                        i = 0 
+                        for brick in self.brickarr:
+                            i += 1
+                            pos_h = hitter.get_position()
+                            pos_b = brick.get_position()
 
-                    height_h, width_h = hitter.get_shape()
-                    height_t, width_t = target.get_shape()
+                            height_h, width_h = hitter.get_shape()
+                            height_b, width_b = brick.get_shape()
 
-                    minx = min(pos_h[0], pos_t[0])
-                    maxx = max(pos_h[0] + width_h, pos_t[0] + width_t)
+                            minx = min(pos_h[0], pos_b[0])
+                            maxx = max(pos_h[0] + width_h, pos_b[0] + width_b)
 
-                    miny = min(pos_h[1], pos_t[1])
-                    maxy = max(pos_h[1] + height_h, pos_t[1] + height_t)
+                            miny = min(pos_h[1], pos_b[1])
+                            maxy = max(pos_h[1] + height_h, pos_b[1] + height_b)
 
-                    if maxx - minx >= width_h + width_t \
-                            or maxy - miny >= height_h + height_t:
-                        continue
+                            if maxx - minx >= width_h + width_b \
+                                    or maxy - miny >= height_h + height_b:
+                                continue
 
-                    if pairs[2]:
-                        if pos_h[0] == pos_t[0]+4:
-                            self.ball.reflect()
-                        else:
-                            self.ball.angle_reflect(pos_h[0] - pos_t[0] - 4)
+                            self. brickarr = self.destroy_brick(i)
+
+                            if pairs[2]:
+                                if pos_h[0] == pos_b[0]+4:
+                                    self.ball.reflect()
+                                else:
+                                    self.ball.angle_reflect(pos_h[0] - pos_b[0] - 4)
+
+                    else:
+                        pos_h = hitter.get_position()
+                        pos_t = target.get_position()
+
+                        height_h, width_h = hitter.get_shape()
+                        height_t, width_t = target.get_shape()
+
+                        minx = min(pos_h[0], pos_t[0])
+                        maxx = max(pos_h[0] + width_h, pos_t[0] + width_t)
+
+                        miny = min(pos_h[1], pos_t[1])
+                        maxy = max(pos_h[1] + height_h, pos_t[1] + height_t)
+
+                        if maxx - minx >= width_h + width_t \
+                                or maxy - miny >= height_h + height_t:
+                            continue
+
+                        if pairs[2]:
+                            if pos_h[0] == pos_t[0]+4:
+                                self.ball.reflect()
+                            else:
+                                self.ball.angle_reflect(pos_h[0] - pos_t[0] - 4)
+
+
+    def destroy_brick(self, i):
+        return self.brickarr.pop(i-1)
