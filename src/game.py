@@ -44,6 +44,8 @@ class Game:
             time.sleep(config.DELAY)
             self.clear()
 
+            self.show_score()
+
             if kb.kbhit():
                 if self.manage_keys(kb.getch()):
                     print(colorama.Fore.RED + "YOU QUIT || SCORE: ", config.SCORE)
@@ -51,12 +53,13 @@ class Game:
             else:
                 kb.clear()
 
-
+            # brickarr = self.add_bricks()
             for brick in brickarr:
                 self.screen.draw(brick)
 
             self.screen.draw(self.paddle)
             self.screen.draw(self.ball)
+            
             self.screen.show()
             self.ball.update()
 
@@ -87,3 +90,9 @@ class Game:
 
         config.BRICKS_LEFT = i
         return brick
+
+    def show_score(self):
+        print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t|| BOUNCE ||\t\tSCORE: ", self.score, "\tLIVES: ", "❤️  "*config.LIVES)
+        print("="*config.WIDTH)
+
+            
