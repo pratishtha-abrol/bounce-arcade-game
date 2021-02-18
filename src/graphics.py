@@ -2,6 +2,14 @@ PADDLE = r"""
 |________|
 """
 
+BIG_PADDLE = r"""
+|____________|
+"""
+
+SMALL_PADDLE = r"""
+|____|
+"""
+
 BALL = r"""
 ()
 """
@@ -40,14 +48,6 @@ THRU_BALL = r"""
 
 PADDLE_GRAB = r"""
 (@)
-"""
-
-BOOST_BRICK = r"""
-|xx($$)xx|
-"""
-
-EXPLOSIVE_BRICK = r"""
-|xx(!!)xx|
 """
 
 UNBREAKABLE_BRICK = r"""

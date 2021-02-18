@@ -8,6 +8,7 @@ import numpy as np
 import random
 import config
 import util
+import graphics
 
 from screen import Screen
 from objects import Paddle, Ball, Brick, BrickArray
@@ -27,12 +28,17 @@ class Game:
         self.__objects = {
             "ball": [self.ball],
             "paddle": [self.paddle],
-            "bricks": []
+            "bricks": [],
+            "boosts": [],
+            "extra_balls": []
         }
 
         self.__colliders = [
             ("ball", "paddle", True),
-            ("ball", "bricks", True)
+            ("ball", "bricks", True),
+            ("boosts", "paddle", False),
+            ("extra_balls", "paddle", True),
+            ("extra_balls", "bricks", True)
         ]
 
     def clear(self):
@@ -66,6 +72,10 @@ class Game:
                 kb.clear()
 
             self.detect_collisions()
+                    
+            for boost in self.__objects["boosts"]:
+                if boost.active == True:
+                    self.screen.draw(boost)
 
             for brick in self.__objects["bricks"]:
                 self.screen.draw(brick)
@@ -76,6 +86,9 @@ class Game:
             self.screen.show()
             self.show_score(_st, _ct)
             self.ball.update()
+            for boost in self.__objects["boosts"]:
+                if boost.move:
+                    boost.update()
 
     def manage_keys(self, ch):
         if ch == config.QUIT_CHAR:
@@ -90,6 +103,9 @@ class Game:
 
     def add_bricks(self):
         self.__objects["bricks"] += BrickArray().get_items()
+        for brick in self.__objects["bricks"]:
+            if brick.has_boost:
+                self.__objects["boosts"].append(brick.boost)
 
     def show_score(self, st, ct):
         if config.LIVES == 0:
@@ -128,11 +144,19 @@ class Game:
                                 config.SCORE += 30
                                 if target.strength == 1:
                                     target.destroy()
+                                    if target.has_boost:
+                                        target.boost.move = True
                                     config.BRICKS_LEFT -= 1
                                     self.__objects["bricks"].remove(target)
                                 else:
                                     target.strength -= 1
                                     target.implement_strength()
+
+                        if pairs[0] == "boosts":
+                            hitter.applied = True
+                            hitter.time = time.time()
+                            hitter.destroy()
+                            # self.__objects["boosts"].remove(hitter)
 
                         if pairs[2]:
                             if pos_h[0] == pos_t[0]+4:

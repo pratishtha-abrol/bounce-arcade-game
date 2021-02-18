@@ -8,6 +8,7 @@ import colorama
 import config
 import graphics
 import util
+import boosts
 
 class Object:
     def __init__(self, rep=np.array([[" "]]), position=np.array([0.,0.]), color=np.array([[("","")]])):
@@ -65,6 +66,31 @@ class Brick(Object):
     def __init__(self, position, strength):
         self.strength = strength
         self.active = True
+        self.has_boost = False
+        self.is_explosive = False
+        flag = util.randint(1,6)
+        if flag == 1:
+            self.has_boost = True
+            self.boost = boosts.FastBall(np.array([position[0]+3, position[1]]))
+        elif flag == 2:
+            self.has_boost = True
+            self.boost = boosts.ThruBall(np.array([position[0]+3, position[1]]))
+        elif flag == 3:
+            self.has_boost = True
+            self.boost = boosts.BallMultiplier(np.array([position[0]+3, position[1]]))
+        elif flag == 4:
+            self.has_boost = True
+            self.boost = boosts.ExpandPaddle(np.array([position[0]+3, position[1]]))
+        elif flag == 5:
+            self.has_boost = True
+            self.boost = boosts.ShrinkPaddle(np.array([position[0]+3, position[1]]))
+        elif flag == 6:
+            self.has_boost = True
+            self.boost = boosts.PaddleGrab(np.array([position[0]+3, position[1]]))
+        # elif flag == 14:
+        #     self.is_explosive = True
+
+
         if self.strength == 1:
             grid = util.str_to_array(graphics.BRICK_1)
             grid_col = util.tup_to_array(grid.shape, (colorama.Back.MAGENTA, colorama.Fore.BLACK))
@@ -127,7 +153,7 @@ class CircleObject(Object):
             self.velocity[1] *= -1
 
         # check sides
-        elif(pos[0] <= 1 or pos[0] >= config.WIDTH):
+        elif(pos[0] <= 3 or pos[0] >= config.WIDTH):
             self.velocity[0] *= -1
 
         #check if ball lost
