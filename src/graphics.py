@@ -6,8 +6,16 @@ BALL = r"""
 ()
 """
 
-BRICK = r"""
-|xxxxxxxx|
+BRICK_1 = r"""
+|xxx01xxx|
+"""
+
+BRICK_2 = r"""
+|xxx02xxx|
+"""
+
+BRICK_3 = r"""
+|xxx03xxx|
 """
 
 EXPAND_PADDLE = r"""

@@ -61,13 +61,13 @@ class Brick(Object):
         self.strength = strength
         self.active = True
         if self.strength == 1:
-            grid = util.str_to_array(graphics.BRICK)
+            grid = util.str_to_array(graphics.BRICK_1)
             grid_col = util.tup_to_array(grid.shape, (colorama.Back.MAGENTA, colorama.Fore.BLACK))
         elif self.strength == 2:
-            grid = util.str_to_array(graphics.BRICK)
+            grid = util.str_to_array(graphics.BRICK_2)
             grid_col = util.tup_to_array(grid.shape, (colorama.Back.GREEN, colorama.Fore.BLACK))
         elif self.strength == 3:
-            grid = util.str_to_array(graphics.BRICK)
+            grid = util.str_to_array(graphics.BRICK_3)
             grid_col = util.tup_to_array(grid.shape, (colorama.Back.BLUE, colorama.Fore.BLACK))
         else:
             grid = util.str_to_array(graphics.UNBREAKABLE_BRICK)
@@ -117,7 +117,7 @@ class CircleObject(Object):
             self.velocity[1] *= -1
 
         # check sides
-        elif(pos[0] <= 0 or pos[0] >= config.WIDTH):
+        elif(pos[0] <= 10 or pos[0] >= config.WIDTH-10):
             self.velocity[0] *= -1
 
         #check if ball lost

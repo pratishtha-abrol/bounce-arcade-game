@@ -111,10 +111,13 @@ class Game:
                             continue
 
                         if pairs[1] == "bricks":
-                            if(target.strength != 4):
-                                target.destroy()
-                                config.BRICKS_LEFT -= 1
-                                self.__objects["bricks"].remove(target)
+                            if target.strength != 4:
+                                if target.strength == 1:
+                                    target.destroy()
+                                    config.BRICKS_LEFT -= 1
+                                    self.__objects["bricks"].remove(target)
+                                else:
+                                    target.strength -= 1
 
                         if pairs[2]:
                             if pos_h[0] == pos_t[0]+4:
