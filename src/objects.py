@@ -127,7 +127,7 @@ class CircleObject(Object):
             self.velocity[1] *= -1
 
         # check sides
-        elif(pos[0] <= 10 or pos[0] >= config.WIDTH-10):
+        elif(pos[0] <= 1 or pos[0] >= config.WIDTH):
             self.velocity[0] *= -1
 
         #check if ball lost
