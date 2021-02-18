@@ -10,7 +10,7 @@ import config
 import util
 
 from screen import Screen
-from objects import Paddle, Ball, Brick
+from objects import Paddle, Ball, Brick, BrickArray
 
 class Game:
     
@@ -19,7 +19,7 @@ class Game:
         self.screen = Screen()
         self.paddle = Paddle()
         self.ball = Ball()
-        self.brickarr = self.add_bricks()
+        # self.brickarr = self.add_bricks()
 
         self.score = 0
         self.frame_count = 0
@@ -27,7 +27,7 @@ class Game:
         self.__objects = {
             "ball": [self.ball],
             "paddle": [self.paddle],
-            "bricks": self.brickarr
+            "bricks": []
         }
 
         self.__colliders = [
@@ -42,6 +42,7 @@ class Game:
 
     def start(self):
         kb = util.KBHit()
+        self.add_bricks()
 
         while True:
             self.frame_count += 1
@@ -55,10 +56,11 @@ class Game:
             else:
                 kb.clear()
 
+            
+
             self.detect_collisions()
 
-            # brickarr = self.add_bricks()
-            for brick in self.brickarr:
+            for brick in self.__objects["bricks"]:
                 self.screen.draw(brick)
 
             self.screen.draw(self.paddle)
@@ -80,25 +82,7 @@ class Game:
         return False
 
     def add_bricks(self):
-        brick =[]
-        i=0
-        count = 0
-        for x in range(max(5, config.WIDTH//2 - 60), min(config.WIDTH//2 + 60, config.WIDTH - 5), 10):
-            xf = util.randint(0,1)
-            if xf == 1:
-                for y in range(13, config.HEIGHT- 20):
-                    if i==50:
-                        break
-                    yf = util.randint(0,1)
-                    if yf == 1:
-                        s = util.randint(1, 4)
-                        brick.append(Brick(np.array([x,y]), s))
-                        i += 1
-                        if s != 4:
-                            count += 1
-
-        config.BRICKS_LEFT = count
-        return brick
+        self.__objects["bricks"] += BrickArray().get_items()
 
     def show_score(self):
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
@@ -109,35 +93,7 @@ class Game:
         for pairs in self.__colliders:
             for hitter in self.__objects[pairs[0]]:
                 for target in self.__objects[pairs[1]]:
-                    if(target == "bricks"):
-                        i = 0 
-                        for brick in self.brickarr:
-                            i += 1
-                            pos_h = hitter.get_position()
-                            pos_b = brick.get_position()
-
-                            height_h, width_h = hitter.get_shape()
-                            height_b, width_b = brick.get_shape()
-
-                            minx = min(pos_h[0], pos_b[0])
-                            maxx = max(pos_h[0] + width_h, pos_b[0] + width_b)
-
-                            miny = min(pos_h[1], pos_b[1])
-                            maxy = max(pos_h[1] + height_h, pos_b[1] + height_b)
-
-                            if maxx - minx >= width_h + width_b \
-                                    or maxy - miny >= height_h + height_b:
-                                continue
-
-                            self. brickarr = self.destroy_brick(i)
-
-                            if pairs[2]:
-                                if pos_h[0] == pos_b[0]+4:
-                                    self.ball.reflect()
-                                else:
-                                    self.ball.angle_reflect(pos_h[0] - pos_b[0] - 4)
-
-                    else:
+                    
                         pos_h = hitter.get_position()
                         pos_t = target.get_position()
 
@@ -154,12 +110,15 @@ class Game:
                                 or maxy - miny >= height_h + height_t:
                             continue
 
+                        if pairs[1] == "bricks":
+                            if(target.strength != 4):
+                                target.destroy()
+                                config.BRICKS_LEFT -= 1
+                                self.__objects["bricks"].remove(target)
+
                         if pairs[2]:
                             if pos_h[0] == pos_t[0]+4:
                                 self.ball.reflect()
                             else:
                                 self.ball.angle_reflect(pos_h[0] - pos_t[0] - 4)
 
-
-    def destroy_brick(self, i):
-        return self.brickarr.pop(i-1)

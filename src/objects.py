@@ -59,6 +59,7 @@ class Paddle(BarObject):
 class Brick(Object):
     def __init__(self, position, strength):
         self.strength = strength
+        self.active = True
         if self.strength == 1:
             grid = util.str_to_array(graphics.BRICK)
             grid_col = util.tup_to_array(grid.shape, (colorama.Back.MAGENTA, colorama.Fore.BLACK))
@@ -72,9 +73,10 @@ class Brick(Object):
             grid = util.str_to_array(graphics.UNBREAKABLE_BRICK)
             grid_col = util.tup_to_array(grid.shape, (colorama.Back.WHITE, colorama.Fore.BLACK))
 
-
-
         super().__init__(grid, position, grid_col)
+
+    def destroy(self):
+        self.active = False
 
 
 class BrickArray():
