@@ -8,7 +8,7 @@ import util
 class Screen:
 
     def __init__(self):
-        self.width, self.height = config.SCREEN_WIDTH-1, config.SCREEN_HEIGHT-1
+        self.width, self.height = config.WIDTH, config.HEIGHT
         self.clear()
 
     def clear(self):

@@ -48,6 +48,11 @@ class Paddle(BarObject):
 
         super().__init__(grid, self.init_pos.copy(), grid_col)
 
+    def check_update(self):
+        if config.RESET[0]:
+            self.position = np.array([config.PADDLE_X, config.PADDLE_Y], dtype='float64')
+            config.RESET[0] = False
+
     def move(self, key):
         if key in self.controls:
             if key == "a":
@@ -127,12 +132,20 @@ class CircleObject(Object):
 
         #check if ball lost
         elif(pos[1] > config.PADDLE_Y):
-            print(colorama.Fore.RED + colorama.Style.BRIGHT + "GAME LOST")
-            exit(0)
+            # print(colorama.Fore.RED + colorama.Style.BRIGHT + "GAME LOST")
+            # exit(0)
             # self.destroy()
+            config.LIVES -= 1
+            if config.LIVES != 0:
+                config.RESET[0] = True
+                config.RESET[1] = True
 
         # else:
         self.position += self.velocity
+
+        if config.RESET[1] == True:
+            self.position = np.array([config.PADDLE_X+4, config.PADDLE_Y-1])
+            config.RESET[1] = False
 
     def reflect(self):
         self.velocity *= -1

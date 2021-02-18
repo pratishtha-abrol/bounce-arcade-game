@@ -32,3 +32,4 @@ RELEASE_CHAR = " "
 LIVES = 5
 SCORE = 0
 BRICKS_LEFT = 0
+RESET = [False, False]

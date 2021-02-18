@@ -45,9 +45,14 @@ class Game:
         self.add_bricks()
 
         while True:
+            if self.is_over:
+                break
+
             self.frame_count += 1
             time.sleep(config.DELAY)
             self.clear()
+
+            self.paddle.check_update()
 
             if kb.kbhit():
                 if self.manage_keys(kb.getch()):
@@ -57,12 +62,7 @@ class Game:
             else:
                 kb.clear()
 
-            
-
             self.detect_collisions()
-
-            if config.BRICKS_LEFT == 0:
-                print(colorama.Back.BLACK + colorama.Style.BRIGHT + "YOU WON\tSCORE: ", config.SCORE)
 
             for brick in self.__objects["bricks"]:
                 self.screen.draw(brick)
@@ -89,6 +89,12 @@ class Game:
         self.__objects["bricks"] += BrickArray().get_items()
 
     def show_score(self):
+        if config.LIVES == 0:
+            print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t\tNO LIVES LEFT :(")
+            self.is_over = True
+        if config.BRICKS_LEFT == 0:
+            print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t\tYOU WON :)")
+            self.is_over = True
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t|| BOUNCE ||\t\tSCORE: ", config.SCORE, "\tBRICKS LEFT: ", config.BRICKS_LEFT, "\tLIVES: ", "❤️  "*config.LIVES)
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
