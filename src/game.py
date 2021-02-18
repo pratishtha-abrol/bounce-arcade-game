@@ -44,6 +44,8 @@ class Game:
         kb = util.KBHit()
         self.add_bricks()
 
+        _st = time.time()
+
         while True:
             if self.is_over:
                 break
@@ -51,6 +53,7 @@ class Game:
             self.frame_count += 1
             time.sleep(config.DELAY)
             self.clear()
+            _ct = time.time()
 
             self.paddle.check_update()
 
@@ -71,7 +74,7 @@ class Game:
             self.screen.draw(self.ball)
             
             self.screen.show()
-            self.show_score()
+            self.show_score(_st, _ct)
             self.ball.update()
 
     def manage_keys(self, ch):
@@ -88,7 +91,7 @@ class Game:
     def add_bricks(self):
         self.__objects["bricks"] += BrickArray().get_items()
 
-    def show_score(self):
+    def show_score(self, st, ct):
         if config.LIVES == 0:
             print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t\tNO LIVES LEFT :(")
             self.is_over = True
@@ -96,7 +99,7 @@ class Game:
             print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t\tYOU WON :)")
             self.is_over = True
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
-        print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t|| BOUNCE ||\t\tSCORE: ", config.SCORE, "\tBRICKS LEFT: ", config.BRICKS_LEFT, "\tLIVES: ", "❤️  "*config.LIVES)
+        print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t|| BOUNCE ||\t\tSCORE: ", config.SCORE, "\tBRICKS LEFT: ", config.BRICKS_LEFT, "\tTIME: ", int(ct-st), "\tLIVES: ", "❤️  "*config.LIVES)
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
 
     def detect_collisions(self):
