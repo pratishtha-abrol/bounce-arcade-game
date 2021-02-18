@@ -10,14 +10,14 @@ import graphics
 import util
 
 class Object:
-    def __init__(self, rep=np.array([[" "]]), position=np.array([0,0]), color=np.array([[("","")]])):
+    def __init__(self, rep=np.array([[" "]]), position=np.array([0.,0.]), color=np.array([[("","")]])):
         self.rep = rep
         self.position = position
         self.height, self.width = self.rep.shape
         self.color = color
 
     @staticmethod
-    def from_string(rep, position=np.array([0,0]), color=""):
+    def from_string(rep, position=np.array([0.,0.]), color=""):
         grid = util.str_to_array(rep)
         color = util.mask(grid, util.tup_to_array(grid.shape, color))
 
