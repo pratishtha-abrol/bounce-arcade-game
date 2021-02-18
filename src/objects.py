@@ -145,6 +145,7 @@ class CircleObject(Object):
 
         if config.RESET[1] == True:
             self.position = np.array([config.PADDLE_X+4, config.PADDLE_Y-1])
+            self.velocity = np.array([0,-1])
             config.RESET[1] = False
 
     def reflect(self):
