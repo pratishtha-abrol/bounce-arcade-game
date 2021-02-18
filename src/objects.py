@@ -57,9 +57,11 @@ class Paddle(BarObject):
     def move(self, key):
         if key in self.controls:
             if key == "a":
-                self.position += [-4., 0.]
+                if self.position[0] > 3:
+                    self.position += [-4., 0.]
             elif key == "d":
-                self.position += [4., 0.]
+                if self.position[0] < config.WIDTH - 10:
+                    self.position += [4., 0.]
 
 
 class Brick(Object):
@@ -68,7 +70,7 @@ class Brick(Object):
         self.active = True
         self.has_boost = False
         self.is_explosive = False
-        flag = util.randint(1,6)
+        flag = util.randint(1,20)
         if flag == 1:
             self.has_boost = True
             self.boost = boosts.FastBall(np.array([position[0]+3, position[1]]))
@@ -87,8 +89,8 @@ class Brick(Object):
         elif flag == 6:
             self.has_boost = True
             self.boost = boosts.PaddleGrab(np.array([position[0]+3, position[1]]))
-        # elif flag == 14:
-        #     self.is_explosive = True
+        elif flag == 14:
+            self.is_explosive = True
 
 
         if self.strength == 1:
@@ -149,11 +151,13 @@ class CircleObject(Object):
 
     def update(self):
         pos = self.position
+
+        # check top
         if(pos[1] <= 5):
             self.velocity[1] *= -1
 
         # check sides
-        elif(pos[0] <= 3 or pos[0] >= config.WIDTH):
+        elif(pos[0] <= 3 or pos[0] >= config.WIDTH-1):
             self.velocity[0] *= -1
 
         #check if ball lost
@@ -175,11 +179,11 @@ class CircleObject(Object):
             config.RESET[1] = False
 
     def reflect(self):
-        self.velocity *= -1
+        self.velocity[1] *= -1
         self.position += self.velocity
 
     def angle_reflect(self, angle):
-        self.velocity[0] += angle // 2
+        self.velocity[0] += round(angle / 4, 0)
         self.velocity[1] *= -1
         self.position += self.velocity
 

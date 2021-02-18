@@ -30,6 +30,12 @@ class Game:
             "paddle": [self.paddle],
             "bricks": [],
             "boosts": [],
+            "boost_multiplier": [],
+            "boost_shrink": [],
+            "boost_expand": [],
+            "boost_grab": [],
+            "boost_fast": [],
+            "boost_thru": [],
             "extra_balls": []
         }
 
@@ -106,6 +112,18 @@ class Game:
         for brick in self.__objects["bricks"]:
             if brick.has_boost:
                 self.__objects["boosts"].append(brick.boost)
+                if (brick.boost.rep == graphics.BALL_MULTIPLIER).all():
+                    self.__objects["boost_multiplier"].append(brick.boost)
+                elif (brick.boost.rep == graphics.SHRINK_PADDLE).all():
+                    self.__objects["boost_shrink"].append(brick.boost)
+                elif (brick.boost.rep == graphics.EXPAND_PADDLE).all():
+                    self.__objects["boost_expand"].append(brick.boost)
+                elif (brick.boost.rep == graphics.PADDLE_GRAB).all():
+                    self.__objects["boost_grab"].append(brick.boost)
+                elif (brick.boost.rep == graphics.FAST_BALL).all():
+                    self.__objects["boost_fast"].append(brick.boost)
+                elif (brick.boost.rep == graphics.THRU_BALL).all():
+                    self.__objects["boost_thru"].append(brick.boost)
 
     def show_score(self, st, ct):
         if config.LIVES == 0:
