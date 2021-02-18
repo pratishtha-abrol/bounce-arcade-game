@@ -21,7 +21,7 @@ class Game:
         self.ball = Ball()
         # self.brickarr = self.add_bricks()
 
-        self.score = 0
+        self.is_over = False
         self.frame_count = 0
 
         self.__objects = {
@@ -53,12 +53,16 @@ class Game:
                 if self.manage_keys(kb.getch()):
                     print(colorama.Fore.RED + "YOU QUIT || SCORE: ", config.SCORE)
                     break
+                kb.clear()
             else:
                 kb.clear()
 
             
 
             self.detect_collisions()
+
+            if config.BRICKS_LEFT == 0:
+                print(colorama.Back.BLACK + colorama.Style.BRIGHT + "YOU WON\tSCORE: ", config.SCORE)
 
             for brick in self.__objects["bricks"]:
                 self.screen.draw(brick)
@@ -86,7 +90,7 @@ class Game:
 
     def show_score(self):
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
-        print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t|| BOUNCE ||\t\tSCORE: ", self.score, "\tBRICKS LEFT: ", config.BRICKS_LEFT, "\tLIVES: ", "❤️  "*config.LIVES)
+        print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t|| BOUNCE ||\t\tSCORE: ", config.SCORE, "\tBRICKS LEFT: ", config.BRICKS_LEFT, "\tLIVES: ", "❤️  "*config.LIVES)
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
 
     def detect_collisions(self):
@@ -112,12 +116,14 @@ class Game:
 
                         if pairs[1] == "bricks":
                             if target.strength != 4:
+                                config.SCORE += 30
                                 if target.strength == 1:
                                     target.destroy()
                                     config.BRICKS_LEFT -= 1
                                     self.__objects["bricks"].remove(target)
                                 else:
                                     target.strength -= 1
+                                    target.implement_strength()
 
                         if pairs[2]:
                             if pos_h[0] == pos_t[0]+4:

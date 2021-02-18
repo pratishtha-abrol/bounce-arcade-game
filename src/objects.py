@@ -51,9 +51,9 @@ class Paddle(BarObject):
     def move(self, key):
         if key in self.controls:
             if key == "a":
-                self.position += [-2., 0.]
+                self.position += [-4., 0.]
             elif key == "d":
-                self.position += [2., 0.]
+                self.position += [4., 0.]
 
 
 class Brick(Object):
@@ -78,6 +78,11 @@ class Brick(Object):
     def destroy(self):
         self.active = False
 
+    def implement_strength(self):
+        if self.strength == 1:
+            self.color = util.tup_to_array(self.rep.shape, (colorama.Back.MAGENTA, colorama.Fore.BLACK))
+        if self.strength == 2:
+            self.color = util.tup_to_array(self.rep.shape, (colorama.Back.GREEN, colorama.Fore.BLACK))
 
 class BrickArray():
     def __init__(self):
