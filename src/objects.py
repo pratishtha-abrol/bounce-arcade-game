@@ -70,8 +70,8 @@ class Brick(Object):
         self.active = True
         self.has_boost = False
         self.is_explosive = False
-        flag = util.randint(1,20)
-        # flag =3
+        # flag = util.randint(1,20)
+        flag =14
         if flag == 1:
             self.has_boost = True
             self.boost = boosts.FastBall(np.array([position[0]+3, position[1]]))

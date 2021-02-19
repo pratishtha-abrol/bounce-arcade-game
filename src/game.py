@@ -315,6 +315,28 @@ class Game:
                                         target.boost.move = True
                                     config.BRICKS_LEFT -= 1
                                     self.__objects["bricks"].remove(target)
+                                    if target.is_explosive:
+                                        for brick in self.__objects["bricks"]:
+                                            # if brick.position[0] == pos_t[0]:
+                                            #     brick.destroy()
+                                            #     if brick.strength != 4:
+                                            #         config.BRICKS_LEFT -= 1
+                                            #     self.__objects["bricks"].remove(brick)
+                                            # if brick.position[1] == pos_t[1]:
+                                            #     brick.destroy()
+                                            #     if brick.strength != 4:
+                                            #         config.BRICKS_LEFT -= 1
+                                            #     self.__objects["bricks"].remove(brick)
+                                            for x in range(max(5, pos_t[0] - 10), min(pos_t[0]+ 20, config.WIDTH-5)):
+                                                # x = pos_t[0]
+                                                for y in range(pos_t[1]-4, pos_t[1]+4):
+                                                    # y = pos_t[1]
+                                                    if (brick.position == np.array([x, y])).all():
+                                                        brick.destroy()
+                                                        if brick.strength != 4:
+                                                            config.BRICKS_LEFT -= 1
+                                                        self.__objects["bricks"].remove(brick)
+
                                 else:
                                     target.strength -= 1
                                     target.implement_strength()
