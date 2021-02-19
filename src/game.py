@@ -11,7 +11,7 @@ import util
 import graphics
 
 from screen import Screen
-from objects import Paddle, Ball, Brick, BrickArray
+from objects import Paddle, Ball, Brick, BrickArray, ExtraBalls
 
 class Game:
     
@@ -54,6 +54,7 @@ class Game:
         self.fast = False
         self.exp = False
         self.shrink = False
+        self.num = 0
 
     def clear(self):
         self.screen.clear()
@@ -167,6 +168,24 @@ class Game:
                 self.shrink = False
 
 
+            ball_multiplier_count = 0
+            for boost in self.__objects["boost_multiplier"]:
+                if boost.position[1] > config.PADDLE_Y:
+                    self.__objects["boost_multiplier"].remove(boost)
+                if boost.applied:
+                    # self.screen.draw(boost)
+                    if _ct > boost.boost_time:
+                        boost.applied = False
+                        ball_multiplier_count -= 1
+                        self.__objects["boost_multiplier"].remove(boost)
+                    else:
+                        ball_multiplier_count += 1
+                        if len(self.__objects["extra_balls"]) <= 5:
+                            self.num = 1 + len(self.__objects["extra_balls"])
+                            self.__objects["extra_balls"] += ExtraBalls(self.num).get_items()
+
+
+
             if kb.kbhit():
                 if self.manage_keys(kb.getch()):
                     print(colorama.Fore.RED + "YOU QUIT || SCORE: ", config.SCORE)
@@ -183,6 +202,9 @@ class Game:
             for brick in self.__objects["bricks"]:
                 self.screen.draw(brick)
 
+            for extraball in self.__objects["extra_balls"]:
+                self.screen.draw(extraball)
+
             self.screen.draw(self.paddle)
             self.screen.draw(self.ball)
             
@@ -196,6 +218,16 @@ class Game:
                     self.ball.update(2)
                 else:
                     self.ball.update(1)
+
+            for extraball in self.__objects["extra_balls"]:
+                if self.reflect:
+                    extraball.reflect()
+                if not self.held:
+                    if self.fast:
+                        extraball.update_extraball(2)
+                    else:
+                        extraball.update_extraball(1)
+
             for boost in self.__objects["boosts"]:
                 if boost.move:
                     boost.update()
@@ -253,6 +285,10 @@ class Game:
                             if hitter.position[1] > config.PADDLE_Y:
                                 hitter.destroy()
                                 self.__objects["boosts"].remove(hitter)
+
+                        if pairs[0] == "extra_balls":
+                            if hitter.position[1] > config.PADDLE_Y:
+                                self.__objects["extra_balls"].remove(hitter)
                     
                         pos_h = hitter.get_position()
                         pos_t = target.get_position()

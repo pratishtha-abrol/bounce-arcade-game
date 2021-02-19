@@ -70,8 +70,8 @@ class Brick(Object):
         self.active = True
         self.has_boost = False
         self.is_explosive = False
-        # flag = util.randint(1,20)
-        flag =6
+        flag = util.randint(1,20)
+        # flag =3
         if flag == 1:
             self.has_boost = True
             self.boost = boosts.FastBall(np.array([position[0]+3, position[1]]))
@@ -81,10 +81,10 @@ class Brick(Object):
         elif flag == 3:
             self.has_boost = True
             self.boost = boosts.BallMultiplier(np.array([position[0]+3, position[1]]))
-        elif flag == 4:
+        elif flag == 21:
             self.has_boost = True
             self.boost = boosts.ExpandPaddle(np.array([position[0]+3, position[1]]))
-        elif flag == 5:
+        elif flag == 22:
             self.has_boost = True
             self.boost = boosts.ShrinkPaddle(np.array([position[0]+3, position[1]]))
         elif flag == 6:
@@ -211,3 +211,38 @@ class Ball(CircleObject):
         color = util.tup_to_array(rep.shape, (colorama.Back.BLACK, colorama.Fore.WHITE))
 
         super().__init__(rep, position, color, velocity, config.LIVES)
+
+class ExtraBall(CircleObject):
+    def __init__(self, position):
+        velocity = np.array([0,-1])
+        rep = util.str_to_array(graphics.BALL)
+        color = util.tup_to_array(rep.shape, (colorama.Back.BLACK, colorama.Fore.RED))
+
+        super().__init__(rep, position, color, velocity, config.LIVES)
+
+    def update_extraball(self, x):
+        pos = self.position
+        # check top
+        if(pos[1] <= 5):
+            self.velocity[1] *= -1
+
+        # check sides
+        elif(pos[0] <= 3 or pos[0] >= config.WIDTH-1):
+            self.velocity[0] *= -1
+
+        # else:
+        self.position[0] += self.velocity[0]
+        self.position[1] += x * self.velocity[1]
+
+
+class ExtraBalls():
+    def __init__(self, num):
+        self.extraball = []
+        while num:
+            pos_x = util.randint(4, config.WIDTH - 5)
+            pos_y = util.randint(10, config.PADDLE_Y-1)
+            self.extraball.append(ExtraBall(np.array([pos_x, pos_y])))
+            num-=1
+
+    def get_items(self):
+        return self.extraball
