@@ -80,10 +80,27 @@ class Game:
                 kb.clear()
 
             self.detect_collisions()
+
+            thru_ball_count = 0
+            for boost in self.__objects["boost_thru"]:
+                if boost.position[1] > config.PADDLE_Y:
+                    self.__objects["boost_thru"].remove(boost)
+                if boost.applied:
+                    # self.screen.draw(boost)
+                    if _ct > boost.boost_time:
+                        boost.applied = False
+                        thru_ball_count -= 1
+                        self.__objects["boost_thru"].remove(boost)
+                    else:
+                        thru_ball_count += 1
+            if thru_ball_count > 0:
+                self.thru = True
+            else:
+                self.thru = False                    
+                        
                     
             for boost in self.__objects["boosts"]:
-                if boost.active == True:
-                    self.screen.draw(boost)
+                self.screen.draw(boost)
 
             for brick in self.__objects["bricks"]:
                 self.screen.draw(brick)
@@ -114,17 +131,17 @@ class Game:
         for brick in self.__objects["bricks"]:
             if brick.has_boost:
                 self.__objects["boosts"].append(brick.boost)
-                if (brick.boost.rep == graphics.BALL_MULTIPLIER).all():
+                if (brick.boost.rep == util.str_to_array(graphics.BALL_MULTIPLIER)).all():
                     self.__objects["boost_multiplier"].append(brick.boost)
-                elif (brick.boost.rep == graphics.SHRINK_PADDLE).all():
+                elif (brick.boost.rep == util.str_to_array(graphics.SHRINK_PADDLE)).all():
                     self.__objects["boost_shrink"].append(brick.boost)
-                elif (brick.boost.rep == graphics.EXPAND_PADDLE).all():
+                elif (brick.boost.rep == util.str_to_array(graphics.EXPAND_PADDLE)).all():
                     self.__objects["boost_expand"].append(brick.boost)
-                elif (brick.boost.rep == graphics.PADDLE_GRAB).all():
+                elif (brick.boost.rep == util.str_to_array(graphics.PADDLE_GRAB)).all():
                     self.__objects["boost_grab"].append(brick.boost)
-                elif (brick.boost.rep == graphics.FAST_BALL).all():
+                elif (brick.boost.rep == util.str_to_array(graphics.FAST_BALL)).all():
                     self.__objects["boost_fast"].append(brick.boost)
-                elif (brick.boost.rep == graphics.THRU_BALL).all():
+                elif (brick.boost.rep == util.str_to_array(graphics.THRU_BALL)).all():
                     self.__objects["boost_thru"].append(brick.boost)
 
     def show_score(self, st, ct):
@@ -146,8 +163,7 @@ class Game:
                         if pairs[0] == "boosts":
                             if hitter.position[1] > config.PADDLE_Y:
                                 hitter.destroy()
-                                if not hitter.applied:
-                                    self.__objects["boosts"].remove(hitter)
+                                self.__objects["boosts"].remove(hitter)
                     
                         pos_h = hitter.get_position()
                         pos_t = target.get_position()
@@ -185,14 +201,15 @@ class Game:
                                 hitter.time = time.time()
                                 hitter.boost_time = time.time()+10
                                 hitter.destroy()
-                            # self.__objects["boosts"].remove(hitter)                        
+                                self.__objects["boosts"].remove(hitter)                        
                         
                         if pairs[2]:
-                            if pairs[1] == "bricks":
-                                if pos_h[0] == pos_t[0]+4:
-                                    hitter.reflect()
-                                else:
-                                    hitter.angle_reflect(pos_h[0] - pos_t[0] - 4)
+                            if not self.thru:
+                                if pairs[1] == "bricks":
+                                    if pos_h[0] == pos_t[0]+4:
+                                        hitter.reflect()
+                                    else:
+                                        hitter.angle_reflect(pos_h[0] - pos_t[0] - 4)
 
                             if pairs[1] == "paddle":
                                 if pos_h[0] == pos_t[0]+4:
