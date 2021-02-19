@@ -80,7 +80,7 @@ class Brick(Object):
         self.has_boost = False
         self.is_explosive = False
         # flag = util.randint(1,20)
-        flag =2
+        flag =1
         if flag == 1:
             self.has_boost = True
             self.boost = boosts.FastBall(np.array([position[0]+3, position[1]]))
@@ -156,13 +156,13 @@ class BrickArray():
 class CircleObject(Object):
     def __init__(self, rep, position, color, velocity, lives):
         self.velocity = velocity
-        self.lives = lives
-        self.thru = False
+        self.lives = lives 
+
+        self.controls = ["a", "d"]
         super().__init__(rep, position, color)
 
-    def update(self):
+    def update(self, x):
         pos = self.position
-
         # check top
         if(pos[1] <= 5):
             self.velocity[1] *= -1
@@ -182,7 +182,8 @@ class CircleObject(Object):
                 config.RESET[1] = True
 
         # else:
-        self.position += self.velocity
+        self.position[0] += self.velocity[0]
+        self.position[1] += x * self.velocity[1]
 
         if config.RESET[1] == True:
             self.position = np.array([config.PADDLE_X+4, config.PADDLE_Y-1])
@@ -198,6 +199,18 @@ class CircleObject(Object):
         self.velocity[1] *= -1
         self.position += self.velocity
 
+    def pause(self):
+        pos = self.position
+        self.position[0] = pos[0]
+        self.position[1] = pos[1] -1
+
+    def move(self,key):
+        if key in self.controls:
+            if key == "a":
+                self.position += [-4, 0]
+            elif key == "d":
+                self.position += [4, 0]
+
 
 class Ball(CircleObject):
     def __init__(self):
@@ -207,9 +220,3 @@ class Ball(CircleObject):
         color = util.tup_to_array(rep.shape, (colorama.Back.BLACK, colorama.Fore.WHITE))
 
         super().__init__(rep, position, color, velocity, config.LIVES)
-
-    def fast_ball(self):
-        self.velocity = np.array([0, -2])
-    
-    def normal_ball(self):
-        self.velocity = np.array([0,-1])

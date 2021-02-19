@@ -48,6 +48,9 @@ class Game:
         ]
 
         self.thru = False
+        self.grab = False
+        self.release = True
+        self.fast = False
 
     def clear(self):
         self.screen.clear()
@@ -71,16 +74,6 @@ class Game:
 
             self.paddle.check_update()
 
-            if kb.kbhit():
-                if self.manage_keys(kb.getch()):
-                    print(colorama.Fore.RED + "YOU QUIT || SCORE: ", config.SCORE)
-                    break
-                kb.clear()
-            else:
-                kb.clear()
-
-            self.detect_collisions()
-
             thru_ball_count = 0
             for boost in self.__objects["boost_thru"]:
                 if boost.position[1] > config.PADDLE_Y:
@@ -96,8 +89,54 @@ class Game:
             if thru_ball_count > 0:
                 self.thru = True
             else:
-                self.thru = False                    
-                        
+                self.thru = False  
+
+
+            paddle_grab_count = 0
+            for boost in self.__objects["boost_grab"]:
+                if boost.position[1] > config.PADDLE_Y:
+                    self.__objects["boost_grab"].remove(boost)
+                if boost.applied:
+                    # self.screen.draw(boost)
+                    if _ct > boost.boost_time:
+                        boost.applied = False
+                        paddle_grab_count -= 1
+                        self.__objects["boost_grab"].remove(boost)
+                    else:
+                        paddle_grab_count += 1
+            if paddle_grab_count > 0:
+                self.grab = True
+            else:
+                self.grab = False  
+
+
+            fast_ball_count = 0
+            for boost in self.__objects["boost_fast"]:
+                if boost.position[1] > config.PADDLE_Y:
+                    self.__objects["boost_fast"].remove(boost)
+                if boost.applied:
+                    # self.screen.draw(boost)
+                    if _ct > boost.boost_time:
+                        boost.applied = False
+                        fast_ball_count -= 1
+                        self.__objects["boost_fast"].remove(boost)
+                    else:
+                        fast_ball_count += 1
+            if fast_ball_count > 0:
+                self.fast = True
+            else:
+                self.fast = False
+
+
+            if kb.kbhit():
+                if self.manage_keys(kb.getch()):
+                    print(colorama.Fore.RED + "YOU QUIT || SCORE: ", config.SCORE)
+                    break
+                kb.clear()
+            else:
+                kb.clear()
+
+            self.detect_collisions()        
                     
             for boost in self.__objects["boosts"]:
                 self.screen.draw(boost)
@@ -110,7 +149,10 @@ class Game:
             
             self.screen.show()
             self.show_score(_st, _ct)
-            self.ball.update()
+            if self.fast:
+                self.ball.update(2)
+            else:
+                self.ball.update(1)
             for boost in self.__objects["boosts"]:
                 if boost.move:
                     boost.update()
@@ -119,11 +161,14 @@ class Game:
         if ch == config.QUIT_CHAR:
             return True
 
-        # elif ch == config.RELEASE_CHAR:
-        #     self.ball.update()
+        elif ch == config.RELEASE_CHAR:
+            self.grab = False
+            self.release = True
 
         else:
             self.paddle.move(ch)
+            # if not self.release:
+            #     self.ball.move(ch)
         return False
 
     def add_bricks(self):
@@ -216,4 +261,3 @@ class Game:
                                     hitter.reflect()
                                 else:
                                     hitter.angle_reflect(pos_h[0] - pos_t[0] - 4)
-
