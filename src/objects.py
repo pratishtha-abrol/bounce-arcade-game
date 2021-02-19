@@ -63,6 +63,15 @@ class Paddle(BarObject):
                 if self.position[0] < config.WIDTH - 10:
                     self.position += [4., 0.]
 
+    def expand_paddle(self):
+        self.rep = util.str_to_array(graphics.BIG_PADDLE)
+
+    def shrink_paddle(self):
+        self.rep = util.str_to_array(graphics.SMALL_PADDLE)
+
+    def paddle_normal(self):
+        self.rep = util.str_to_array(graphics.PADDLE)
+
 
 class Brick(Object):
     def __init__(self, position, strength):
@@ -70,7 +79,8 @@ class Brick(Object):
         self.active = True
         self.has_boost = False
         self.is_explosive = False
-        flag = util.randint(1,20)
+        # flag = util.randint(1,20)
+        flag =2
         if flag == 1:
             self.has_boost = True
             self.boost = boosts.FastBall(np.array([position[0]+3, position[1]]))
@@ -147,6 +157,7 @@ class CircleObject(Object):
     def __init__(self, rep, position, color, velocity, lives):
         self.velocity = velocity
         self.lives = lives
+        self.thru = False
         super().__init__(rep, position, color)
 
     def update(self):
@@ -196,4 +207,9 @@ class Ball(CircleObject):
         color = util.tup_to_array(rep.shape, (colorama.Back.BLACK, colorama.Fore.WHITE))
 
         super().__init__(rep, position, color, velocity, config.LIVES)
-        
+
+    def fast_ball(self):
+        self.velocity = np.array([0, -2])
+    
+    def normal_ball(self):
+        self.velocity = np.array([0,-1])

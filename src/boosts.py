@@ -15,8 +15,10 @@ class Boost():
         self.velocity = velocity
         self.active = True
         self.move = False
+
         self.applied = False
         self.time = 0
+        self.boost_time = 0
 
     def get_position(self):
         return self.position

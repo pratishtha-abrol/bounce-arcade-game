@@ -47,6 +47,8 @@ class Game:
             ("extra_balls", "bricks", True)
         ]
 
+        self.thru = False
+
     def clear(self):
         self.screen.clear()
         # sp.call("clear", shell=True)
@@ -140,6 +142,12 @@ class Game:
         for pairs in self.__colliders:
             for hitter in self.__objects[pairs[0]]:
                 for target in self.__objects[pairs[1]]:
+
+                        if pairs[0] == "boosts":
+                            if hitter.position[1] > config.PADDLE_Y:
+                                hitter.destroy()
+                                if not hitter.applied:
+                                    self.__objects["boosts"].remove(hitter)
                     
                         pos_h = hitter.get_position()
                         pos_t = target.get_position()
@@ -171,14 +179,24 @@ class Game:
                                     target.implement_strength()
 
                         if pairs[0] == "boosts":
-                            hitter.applied = True
-                            hitter.time = time.time()
-                            hitter.destroy()
-                            # self.__objects["boosts"].remove(hitter)
-
+                            if hitter.active:
+                                hitter.applied = True
+                                config.SCORE += 10
+                                hitter.time = time.time()
+                                hitter.boost_time = time.time()+10
+                                hitter.destroy()
+                            # self.__objects["boosts"].remove(hitter)                        
+                        
                         if pairs[2]:
-                            if pos_h[0] == pos_t[0]+4:
-                                self.ball.reflect()
-                            else:
-                                self.ball.angle_reflect(pos_h[0] - pos_t[0] - 4)
+                            if pairs[1] == "bricks":
+                                if pos_h[0] == pos_t[0]+4:
+                                    hitter.reflect()
+                                else:
+                                    hitter.angle_reflect(pos_h[0] - pos_t[0] - 4)
+
+                            if pairs[1] == "paddle":
+                                if pos_h[0] == pos_t[0]+4:
+                                    hitter.reflect()
+                                else:
+                                    hitter.angle_reflect(pos_h[0] - pos_t[0] - 4)
 
