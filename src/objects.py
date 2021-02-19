@@ -42,7 +42,7 @@ class BarObject(Object):
 class Paddle(BarObject):
     def __init__(self):
         grid = util.str_to_array(graphics.PADDLE)
-        grid_col = util.tup_to_array(grid.shape, (colorama.Back.YELLOW, colorama.Fore.BLACK))
+        grid_col = util.tup_to_array(grid.shape, (colorama.Back.YELLOW, colorama.Fore.WHITE))
         self.init_pos = np.array([config.PADDLE_X, config.PADDLE_Y], dtype='float64')
 
         self.controls = ["a", "d"]
@@ -63,15 +63,6 @@ class Paddle(BarObject):
                 if self.position[0] < config.WIDTH - 10:
                     self.position += [4., 0.]
 
-    def expand_paddle(self):
-        self.rep = util.str_to_array(graphics.BIG_PADDLE)
-
-    def shrink_paddle(self):
-        self.rep = util.str_to_array(graphics.SMALL_PADDLE)
-
-    def paddle_normal(self):
-        self.rep = util.str_to_array(graphics.PADDLE)
-
 
 class Brick(Object):
     def __init__(self, position, strength):
@@ -80,7 +71,7 @@ class Brick(Object):
         self.has_boost = False
         self.is_explosive = False
         # flag = util.randint(1,20)
-        flag =1
+        flag =6
         if flag == 1:
             self.has_boost = True
             self.boost = boosts.FastBall(np.array([position[0]+3, position[1]]))
@@ -126,6 +117,7 @@ class Brick(Object):
             self.color = util.tup_to_array(self.rep.shape, (colorama.Back.MAGENTA, colorama.Fore.BLACK))
         if self.strength == 2:
             self.color = util.tup_to_array(self.rep.shape, (colorama.Back.GREEN, colorama.Fore.BLACK))
+
 
 class BrickArray():
     def __init__(self):
@@ -192,17 +184,16 @@ class CircleObject(Object):
 
     def reflect(self):
         self.velocity[1] *= -1
-        self.position += self.velocity
+        # self.position += self.velocity
 
     def angle_reflect(self, angle):
         self.velocity[0] += round(angle / 4, 0)
         self.velocity[1] *= -1
-        self.position += self.velocity
+        # self.position += self.velocity
 
-    def pause(self):
-        pos = self.position
+    def pause(self, pos):
         self.position[0] = pos[0]
-        self.position[1] = pos[1] -1
+        self.position[1] = pos[1]
 
     def move(self,key):
         if key in self.controls:

@@ -49,8 +49,11 @@ class Game:
 
         self.thru = False
         self.grab = False
-        self.release = True
+        self.held = False
+        self.reflect = False
         self.fast = False
+        self.exp = False
+        self.shrink = False
 
     def clear(self):
         self.screen.clear()
@@ -127,6 +130,42 @@ class Game:
             else:
                 self.fast = False
 
+            
+            expand_paddle_count = 0
+            for boost in self.__objects["boost_expand"]:
+                if boost.position[1] > config.PADDLE_Y:
+                    self.__objects["boost_expand"].remove(boost)
+                if boost.applied:
+                    # self.screen.draw(boost)
+                    if _ct > boost.boost_time:
+                        boost.applied = False
+                        expand_paddle_count -= 1
+                        self.__objects["boost_expand"].remove(boost)
+                    else:
+                        expand_paddle_count += 1
+            if expand_paddle_count > 0:
+                self.exp = True
+            else:
+                self.exp = False
+
+            
+            shrink_paddle_count = 0
+            for boost in self.__objects["boost_shrink"]:
+                if boost.position[1] > config.PADDLE_Y:
+                    self.__objects["boost_shrink"].remove(boost)
+                if boost.applied:
+                    # self.screen.draw(boost)
+                    if _ct > boost.boost_time:
+                        boost.applied = False
+                        shrink_paddle_count -= 1
+                        self.__objects["boost_shrink"].remove(boost)
+                    else:
+                        shrink_paddle_count += 1
+            if shrink_paddle_count > 0:
+                self.shrink = True
+            else:
+                self.shrink = False
+
 
             if kb.kbhit():
                 if self.manage_keys(kb.getch()):
@@ -136,7 +175,7 @@ class Game:
             else:
                 kb.clear()
 
-            self.detect_collisions()        
+            self.detect_collisions()   
                     
             for boost in self.__objects["boosts"]:
                 self.screen.draw(boost)
@@ -149,10 +188,14 @@ class Game:
             
             self.screen.show()
             self.show_score(_st, _ct)
-            if self.fast:
-                self.ball.update(2)
-            else:
-                self.ball.update(1)
+            if self.reflect:
+                self.ball.reflect()
+                self.reflect = False
+            if not self.held:
+                if self.fast:
+                    self.ball.update(2)
+                else:
+                    self.ball.update(1)
             for boost in self.__objects["boosts"]:
                 if boost.move:
                     boost.update()
@@ -162,13 +205,14 @@ class Game:
             return True
 
         elif ch == config.RELEASE_CHAR:
-            self.grab = False
-            self.release = True
+            if self.held:
+                self.held = False
+                self.reflect = True
 
         else:
             self.paddle.move(ch)
-            # if not self.release:
-            #     self.ball.move(ch)
+            if self.held:
+                self.ball.move(ch)
         return False
 
     def add_bricks(self):
@@ -257,7 +301,14 @@ class Game:
                                         hitter.angle_reflect(pos_h[0] - pos_t[0] - 4)
 
                             if pairs[1] == "paddle":
-                                if pos_h[0] == pos_t[0]+4:
-                                    hitter.reflect()
+                                if not self.grab:
+                                    if pos_h[0] == pos_t[0]+4:
+                                        hitter.reflect()
+                                    else:
+                                        hitter.angle_reflect(pos_h[0] - pos_t[0] - 4)
                                 else:
-                                    hitter.angle_reflect(pos_h[0] - pos_t[0] - 4)
+                                    pos = pos_h
+                                    pos[1] -= 1
+                                    hitter.pause(pos_h)
+                                    self.held = True
+

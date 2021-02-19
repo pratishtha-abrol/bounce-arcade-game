@@ -1,5 +1,5 @@
 PADDLE = r"""
-|________|
+          
 """
 
 BIG_PADDLE = r"""
