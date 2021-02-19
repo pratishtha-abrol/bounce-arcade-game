@@ -71,7 +71,7 @@ class Brick(Object):
         self.has_boost = False
         self.is_explosive = False
         # flag = util.randint(1,20)
-        flag =14
+        flag =6
         if flag == 1:
             self.has_boost = True
             self.boost = boosts.FastBall(np.array([position[0]+3, position[1]]))
@@ -179,7 +179,7 @@ class CircleObject(Object):
 
         if config.RESET[1] == True:
             self.position = np.array([config.PADDLE_X+4, config.PADDLE_Y-1])
-            self.velocity = np.array([0,-1])
+            self.velocity = np.array([0,1])
             config.RESET[1] = False
 
     def reflect(self):
@@ -206,7 +206,7 @@ class CircleObject(Object):
 class Ball(CircleObject):
     def __init__(self):
         position = np.array([config.PADDLE_X+4, config.PADDLE_Y-1])
-        velocity = np.array([0,-1])
+        velocity = np.array([0,1])
         rep = util.str_to_array(graphics.BALL)
         color = util.tup_to_array(rep.shape, (colorama.Back.BLACK, colorama.Fore.WHITE))
 
@@ -214,7 +214,7 @@ class Ball(CircleObject):
 
 class ExtraBall(CircleObject):
     def __init__(self, position):
-        velocity = np.array([0,-1])
+        velocity = np.array([0,1])
         rep = util.str_to_array(graphics.BALL)
         color = util.tup_to_array(rep.shape, (colorama.Back.BLACK, colorama.Fore.RED))
 

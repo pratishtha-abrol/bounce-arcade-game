@@ -210,6 +210,9 @@ class Game:
             
             self.screen.show()
             self.show_score(_st, _ct)
+            for boost in self.__objects["boosts"]:
+                if boost.move:
+                    boost.update()
             if self.reflect:
                 self.ball.reflect()
                 self.reflect = False
@@ -227,10 +230,6 @@ class Game:
                         extraball.update_extraball(2)
                     else:
                         extraball.update_extraball(1)
-
-            for boost in self.__objects["boosts"]:
-                if boost.move:
-                    boost.update()
 
     def manage_keys(self, ch):
         if ch == config.QUIT_CHAR:
@@ -302,8 +301,8 @@ class Game:
                         miny = min(pos_h[1], pos_t[1])
                         maxy = max(pos_h[1] + height_h, pos_t[1] + height_t)
 
-                        if maxx - minx >= width_h + width_t \
-                                or maxy - miny >= height_h + height_t:
+                        if maxx - minx > width_h + width_t \
+                                or maxy - miny > height_h + height_t:
                             continue
 
                         if pairs[1] == "bricks":
@@ -317,23 +316,15 @@ class Game:
                                     self.__objects["bricks"].remove(target)
                                     if target.is_explosive:
                                         for brick in self.__objects["bricks"]:
-                                            # if brick.position[0] == pos_t[0]:
-                                            #     brick.destroy()
-                                            #     if brick.strength != 4:
-                                            #         config.BRICKS_LEFT -= 1
-                                            #     self.__objects["bricks"].remove(brick)
-                                            # if brick.position[1] == pos_t[1]:
-                                            #     brick.destroy()
-                                            #     if brick.strength != 4:
-                                            #         config.BRICKS_LEFT -= 1
-                                            #     self.__objects["bricks"].remove(brick)
                                             for x in range(max(5, pos_t[0] - 10), min(pos_t[0]+ 20, config.WIDTH-5)):
                                                 # x = pos_t[0]
                                                 for y in range(pos_t[1]-4, pos_t[1]+4):
                                                     # y = pos_t[1]
                                                     if (brick.position == np.array([x, y])).all():
                                                         brick.destroy()
+                                                        config.SCORE += 30
                                                         if brick.strength != 4:
+                                                            config.SCORE += 10
                                                             config.BRICKS_LEFT -= 1
                                                         self.__objects["bricks"].remove(brick)
 
