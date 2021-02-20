@@ -239,8 +239,8 @@ class ExtraBalls():
     def __init__(self, num):
         self.extraball = []
         while num:
-            pos_x = util.randint(4, config.WIDTH - 5)
-            pos_y = util.randint(10, config.PADDLE_Y-5)
+            pos_x = util.randint(max(5, config.WIDTH//2 - 60), min(config.WIDTH//2 + 60, config.WIDTH - 5))
+            pos_y = util.randint(config.HEIGHT - 35, config.PADDLE_Y)
             self.extraball.append(ExtraBall(np.array([pos_x, pos_y])))
             num-=1
 

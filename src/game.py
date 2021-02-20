@@ -346,6 +346,9 @@ class Game:
                                                         if brick.strength != 4:
                                                             config.SCORE += 10
                                                             config.BRICKS_LEFT -= 1
+
+                                                        if brick.has_boost:
+                                                            brick.boost.move = True
                                                         self.__objects["bricks"].remove(brick)
 
                                 else:

@@ -2,14 +2,6 @@ PADDLE = r"""
           
 """
 
-BIG_PADDLE = r"""
-|____________|
-"""
-
-SMALL_PADDLE = r"""
-|____|
-"""
-
 BALL = r"""
 ()
 """
