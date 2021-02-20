@@ -55,6 +55,7 @@ class Game:
         self.exp = False
         self.shrink = False
         self.num = 0
+        self.multiplier_on = False
 
     def clear(self):
         self.screen.clear()
@@ -180,11 +181,17 @@ class Game:
                         self.__objects["boost_multiplier"].remove(boost)
                     else:
                         ball_multiplier_count += 1
-                        if len(self.__objects["extra_balls"]) <= 5:
-                            self.num = 1 + len(self.__objects["extra_balls"])
-                            self.__objects["extra_balls"] += ExtraBalls(self.num).get_items()
+                        # self.split = True
+                        # if len(self.__objects["extra_balls"]) <= 5:
+                            # self.manage_extra_balls()
+                            # self.__objects["extra_balls"] += ExtraBalls(self.num).get_items()
 
-
+            self.num = ball_multiplier_count
+            # if self.num > 0:
+            #     self.multiplier_on = False
+            # self.balls = 2 ** (ball_multiplier_count - 1)
+            self.balls = 1 + len(self.__objects["extra_balls"])
+            self.check_balls()
 
             if kb.kbhit():
                 if self.manage_keys(kb.getch()):
@@ -264,6 +271,17 @@ class Game:
                 elif (brick.boost.rep == util.str_to_array(graphics.THRU_BALL)).all():
                     self.__objects["boost_thru"].append(brick.boost)
 
+    def check_balls(self):
+        if self.num>1:
+            if not self.multiplier_on:
+                # if len(self.__objects["extra_balls"]) < self.num:
+                    self.__objects["extra_balls"] += ExtraBalls(self.balls).get_items()  
+                    self.multiplier_on = True
+        elif self.num == 1:
+            if not self.multiplier_on:
+                self.__objects["extra_balls"] += ExtraBalls(1).get_items()
+                self.multiplier_on = True
+
     def show_score(self, st, ct):
         if config.LIVES == 0:
             print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t\tNO LIVES LEFT :(")
@@ -287,7 +305,9 @@ class Game:
 
                         if pairs[0] == "extra_balls":
                             if hitter.position[1] > config.PADDLE_Y:
-                                self.__objects["extra_balls"].remove(hitter)
+                                for ball in self.__objects["extra_balls"]:
+                                    if hitter == ball:
+                                        self.__objects["extra_balls"].remove(hitter)
                     
                         pos_h = hitter.get_position()
                         pos_t = target.get_position()
@@ -339,7 +359,10 @@ class Game:
                                 hitter.time = time.time()
                                 hitter.boost_time = time.time()+10
                                 hitter.destroy()
-                                self.__objects["boosts"].remove(hitter)                        
+                                self.__objects["boosts"].remove(hitter)
+                                for boost in self.__objects["boost_multiplier"]:
+                                    if hitter == boost:
+                                        self.multiplier_on = False    
                         
                         if pairs[2]:
                             if not self.thru:

@@ -71,7 +71,7 @@ class Brick(Object):
         self.has_boost = False
         self.is_explosive = False
         # flag = util.randint(1,20)
-        flag =6
+        flag =3
         if flag == 1:
             self.has_boost = True
             self.boost = boosts.FastBall(np.array([position[0]+3, position[1]]))
@@ -214,9 +214,9 @@ class Ball(CircleObject):
 
 class ExtraBall(CircleObject):
     def __init__(self, position):
-        velocity = np.array([0,1])
+        velocity = np.array([0,-1])
         rep = util.str_to_array(graphics.BALL)
-        color = util.tup_to_array(rep.shape, (colorama.Back.BLACK, colorama.Fore.RED))
+        color = util.tup_to_array(rep.shape, (colorama.Back.BLACK, colorama.Fore.YELLOW))
 
         super().__init__(rep, position, color, velocity, config.LIVES)
 
@@ -240,7 +240,7 @@ class ExtraBalls():
         self.extraball = []
         while num:
             pos_x = util.randint(4, config.WIDTH - 5)
-            pos_y = util.randint(10, config.PADDLE_Y-1)
+            pos_y = util.randint(10, config.PADDLE_Y-5)
             self.extraball.append(ExtraBall(np.array([pos_x, pos_y])))
             num-=1
 
