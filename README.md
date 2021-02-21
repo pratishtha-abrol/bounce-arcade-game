@@ -13,9 +13,9 @@ a terminal based game built in python with OOPS concepts
 > Atexit
 
 ## Keyboard Controls:
-> "a" : moves left
-> "d" : moves right
-> " " : release ball in case of paddle grab boost
+> - "a" : moves left
+> - "d" : moves right
+> - " " : release ball in case of paddle grab boost
 
 ## Boosts:
 
