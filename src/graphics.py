@@ -42,6 +42,14 @@ PADDLE_GRAB = r"""
 (@)
 """
 
+SHOOT_BULLETS = r"""
+(>)
+"""
+
+BULLET = r"""
+(^)
+"""
+
 UNBREAKABLE_BRICK = r"""
 |HHHHHHHH|
 """

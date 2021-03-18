@@ -12,6 +12,7 @@ import graphics
 
 from screen import Screen
 from objects import Paddle, Ball, Brick, BrickArray, ExtraBalls
+from boosts import Bullet
 
 class Game:
     
@@ -36,7 +37,9 @@ class Game:
             "boost_grab": [],
             "boost_fast": [],
             "boost_thru": [],
-            "extra_balls": []
+            "boost_shoot": [],
+            "extra_balls": [],
+            "bullets": []
         }
 
         self.__colliders = [
@@ -44,7 +47,8 @@ class Game:
             ("ball", "bricks", True),
             ("boosts", "paddle", False),
             ("extra_balls", "paddle", True),
-            ("extra_balls", "bricks", True)
+            ("extra_balls", "bricks", True),
+            ("bullets", "bricks", False)
         ]
 
         self.thru = False
@@ -54,6 +58,7 @@ class Game:
         self.fast = False
         self.exp = False
         self.shrink = False
+        self.shoot = False
         self.num = 0
         self.multiplier_on = False
 
@@ -67,6 +72,7 @@ class Game:
         self.add_bricks()
 
         _st = time.time()
+        ut = _st
 
         while True:
             if self.is_over:
@@ -76,6 +82,16 @@ class Game:
             time.sleep(config.DELAY)
             self.clear()
             _ct = time.time()
+
+            if _ct > ut+10:
+                for brick in self.__objects["bricks"]:
+                    brick.update_position()
+                    if (brick.position > config.PADDLE_Y-np.array([0,2])).all():
+                        config.LIVES=0
+                for boost in self.__objects["boosts"]:
+                    boost.update_position()
+
+                ut = _ct
 
             self.paddle.check_update()
 
@@ -169,6 +185,23 @@ class Game:
                 self.shrink = False
 
 
+            shoot_bullet_count = 0
+            for boost in self.__objects["boost_shoot"]:
+                if boost.position[1] > config.PADDLE_Y:
+                    self.__objects["boost_shoot"].remove(boost)
+                if boost.applied:
+                    if _ct > boost.boost_time:
+                        boost.applied = False
+                        shoot_bullet_count -= 1
+                        self.__objects["boost_shoot"].remove(boost)
+                    else:
+                        shoot_bullet_count += 1
+            if shoot_bullet_count > 0:
+                self.shoot = True
+            else:
+                self.shoot = False
+
+
             ball_multiplier_count = 0
             for boost in self.__objects["boost_multiplier"]:
                 if boost.position[1] > config.PADDLE_Y:
@@ -212,6 +245,9 @@ class Game:
             for extraball in self.__objects["extra_balls"]:
                 self.screen.draw(extraball)
 
+            for bullet in self.__objects["bullets"]:
+                self.screen.draw(bullet)
+
             self.screen.draw(self.paddle)
             self.screen.draw(self.ball)
             
@@ -228,6 +264,9 @@ class Game:
                     self.ball.update(2)
                 else:
                     self.ball.update(1)
+
+            for bullet in self.__objects["bullets"]:
+                bullet.update()
 
             for extraball in self.__objects["extra_balls"]:
                 if self.reflect:
@@ -246,6 +285,10 @@ class Game:
             if self.held:
                 self.held = False
                 self.reflect = True
+
+        elif ch == config.SHOOT_CHAR:
+            if self.shoot:
+                self.shoot_bullet(self.paddle.position+np.array([4.0,-1.0]))
 
         else:
             self.paddle.move(ch)
@@ -270,6 +313,8 @@ class Game:
                     self.__objects["boost_fast"].append(brick.boost)
                 elif (brick.boost.rep == util.str_to_array(graphics.THRU_BALL)).all():
                     self.__objects["boost_thru"].append(brick.boost)
+                elif (brick.boost.rep == util.str_to_array(graphics.SHOOT_BULLETS)).all():
+                    self.__objects["boost_shoot"].append(brick.boost)
 
     def check_balls(self):
         if self.num>1:
@@ -282,9 +327,12 @@ class Game:
                 self.__objects["extra_balls"] += ExtraBalls(1).get_items()
                 self.multiplier_on = True
 
+    def shoot_bullet(self, position):
+        self.__objects["bullets"].append(Bullet(position))
+
     def show_score(self, st, ct):
         if config.LIVES == 0:
-            print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t\tNO LIVES LEFT :(")
+            print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t\tGAME OVER, YOU LOST :(")
             self.is_over = True
         if config.BRICKS_LEFT == 0:
             print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t\tYOU WON :)")
@@ -324,6 +372,10 @@ class Game:
                         if maxx - minx > width_h + width_t \
                                 or maxy - miny > height_h + height_t:
                             continue
+
+                        if pairs[0] == "bullets":
+                            self.__objects["bullets"].remove(hitter)
+                                    
 
                         if pairs[1] == "bricks":
                             if target.strength != 4:

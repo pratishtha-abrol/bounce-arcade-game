@@ -27,6 +27,7 @@ FG_COL = colorama.Fore.WHITE
 # keyboard control
 QUIT_CHAR = "q"
 RELEASE_CHAR = " "
+SHOOT_CHAR = "s"
 
 # game config
 LIVES = 5

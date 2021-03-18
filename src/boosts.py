@@ -43,6 +43,9 @@ class Boost():
     def apply(self):
         pass
 
+    def update_position(self):
+        self.position += np.array([0,1])
+
 
 class FastBall(Boost):
     def __init__(self, position):
@@ -96,3 +99,34 @@ class PaddleGrab(Boost):
         color = util.tup_to_array(rep.shape, (colorama.Back.BLACK, colorama.Fore.CYAN))
 
         super().__init__(rep, position, color, velocity)
+
+
+class ShootBullet(Boost):
+    def __init__(self, position):
+        velocity = np.array([0, 1])
+        rep = util.str_to_array(graphics.SHOOT_BULLETS)
+        color = util.tup_to_array(rep.shape, (colorama.Back.BLACK, colorama.Fore.CYAN))
+
+        super().__init__(rep, position, color, velocity)
+
+
+
+class Bullet():
+    def __init__(self, position=np.array([0.,0.])):
+        self.rep = util.str_to_array(graphics.BULLET)
+        self.height, self.width = self.rep.shape
+        self.color = util.tup_to_array(self.rep.shape, (colorama.Back.BLACK, colorama.Fore.RED))
+        self.position = position
+        self.velocity = np.array([0,-1])
+
+    def get_position(self):
+        return self.position
+
+    def get_shape(self):
+        return (self.height, self.width)
+
+    def get_rep(self, frame=0):
+        return self.rep, self.color
+
+    def update(self):
+        self.position+=self.velocity

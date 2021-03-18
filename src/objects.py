@@ -70,8 +70,8 @@ class Brick(Object):
         self.active = True
         self.has_boost = False
         self.is_explosive = False
-        flag = util.randint(1,20)
-        # flag =3
+        # flag = util.randint(1,20)
+        flag = 7
         if flag == 1:
             self.has_boost = True
             self.boost = boosts.FastBall(np.array([position[0]+3, position[1]]))
@@ -90,6 +90,9 @@ class Brick(Object):
         elif flag == 6:
             self.has_boost = True
             self.boost = boosts.PaddleGrab(np.array([position[0]+3, position[1]]))
+        elif flag == 7:
+            self.has_boost = True
+            self.boost = boosts.ShootBullet(np.array([position[0]+3, position[1]]))
         elif flag == 14:
             self.is_explosive = True
 
@@ -117,6 +120,9 @@ class Brick(Object):
             self.color = util.tup_to_array(self.rep.shape, (colorama.Back.MAGENTA, colorama.Fore.BLACK))
         if self.strength == 2:
             self.color = util.tup_to_array(self.rep.shape, (colorama.Back.GREEN, colorama.Fore.BLACK))
+
+    def update_position(self):
+        self.position += np.array([0,1])
 
 
 class BrickArray():
