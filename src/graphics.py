@@ -2,6 +2,26 @@ PADDLE = r"""
           
 """
 
+EXPANDED_PADDLE = r"""
+              
+"""
+
+SHRUNK_PADDLE = r"""
+    
+"""
+
+SHOOTING_PADDLE = r"""
+^      ^
+"""
+
+SHOOTING_EXPANDED_PADDLE = r"""
+^            ^
+"""
+
+SHOOTING_SHRUNK_PADDLE = r"""
+^   ^
+"""
+
 BALL = r"""
 ()
 """

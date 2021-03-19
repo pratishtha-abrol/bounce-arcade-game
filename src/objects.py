@@ -40,14 +40,16 @@ class BarObject(Object):
 
 
 class Paddle(BarObject):
-    def __init__(self):
-        grid = util.str_to_array(graphics.PADDLE)
-        grid_col = util.tup_to_array(grid.shape, (colorama.Back.YELLOW, colorama.Fore.WHITE))
+    def __init__(self, rep):
+        # grid = util.str_to_array(graphics.PADDLE)
+        # grid_col = util.tup_to_array(grid.shape, (colorama.Back.YELLOW, colorama.Fore.WHITE))
+        self.rep = util.str_to_array(rep)
+        self.color = util.tup_to_array(self.rep.shape, (colorama.Back.YELLOW, colorama.Fore.WHITE))
         self.init_pos = np.array([config.PADDLE_X, config.PADDLE_Y], dtype='float64')
 
         self.controls = ["a", "d"]
 
-        super().__init__(grid, self.init_pos.copy(), grid_col)
+        super().__init__(self.rep, self.init_pos.copy(), self.color)
 
     def check_update(self):
         if config.RESET[0]:
@@ -62,6 +64,10 @@ class Paddle(BarObject):
             elif key == "d":
                 if self.position[0] < config.WIDTH - 10:
                     self.position += [4., 0.]
+
+    def change(self, rep):
+        self.rep = util.str_to_array(rep)
+        self.color = util.tup_to_array(self.rep.shape, (colorama.Back.YELLOW, colorama.Fore.WHITE)) 
 
 
 class Brick(Object):
@@ -81,10 +87,10 @@ class Brick(Object):
         elif flag == 3:
             self.has_boost = True
             self.boost = boosts.BallMultiplier(np.array([position[0]+3, position[1]]))
-        elif flag == 21:
+        elif flag == 4:
             self.has_boost = True
             self.boost = boosts.ExpandPaddle(np.array([position[0]+3, position[1]]))
-        elif flag == 22:
+        elif flag == 5:
             self.has_boost = True
             self.boost = boosts.ShrinkPaddle(np.array([position[0]+3, position[1]]))
         elif flag == 6:

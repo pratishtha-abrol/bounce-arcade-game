@@ -19,7 +19,7 @@ class Game:
     def __init__(self):
         print("\033[?25l\033[2J", end='')
         self.screen = Screen()
-        self.paddle = Paddle()
+        self.paddle = Paddle(graphics.PADDLE)
         self.ball = Ball()
         # self.brickarr = self.add_bricks()
 
@@ -184,7 +184,6 @@ class Game:
             else:
                 self.shrink = False
 
-
             shoot_bullet_count = 0
             for boost in self.__objects["boost_shoot"]:
                 if boost.position[1] > config.PADDLE_Y:
@@ -200,6 +199,34 @@ class Game:
                 self.shoot = True
             else:
                 self.shoot = False
+
+            if self.shoot and self.shrink:
+                self.paddle.rep = util.str_to_array(graphics.SHOOTING_SHRUNK_PADDLE)
+                self.paddle.color = util.tup_to_array(util.str_to_array(graphics.SHOOTING_SHRUNK_PADDLE).shape, (colorama.Back.YELLOW, colorama.Fore.WHITE))
+                self.paddle.height, self.paddle.width = self.paddle.rep.shape
+            elif self.shoot and self.exp:
+                self.paddle.rep = util.str_to_array(graphics.SHOOTING_EXPANDED_PADDLE)
+                self.paddle.color = util.tup_to_array(util.str_to_array(graphics.SHOOTING_EXPANDED_PADDLE).shape, (colorama.Back.YELLOW, colorama.Fore.WHITE))
+                self.paddle.height, self.paddle.width = self.paddle.rep.shape
+            elif self.shoot:
+                self.paddle.rep = util.str_to_array(graphics.SHOOTING_PADDLE)
+                self.paddle.color = util.tup_to_array(util.str_to_array(graphics.SHOOTING_PADDLE).shape, (colorama.Back.YELLOW, colorama.Fore.WHITE))
+                self.paddle.height, self.paddle.width = self.paddle.rep.shape
+            elif self.shrink :
+                # self.paddle.change(graphics.SHRINK_PADDLE)
+                self.paddle.rep = util.str_to_array(graphics.SHRUNK_PADDLE)
+                self.paddle.color = util.tup_to_array(util.str_to_array(graphics.SHRUNK_PADDLE).shape, (colorama.Back.YELLOW, colorama.Fore.WHITE))
+                self.paddle.height, self.paddle.width = self.paddle.rep.shape
+            elif self.exp :
+                # self.paddle.change(graphics.EXPAND_PADDLE)
+                self.paddle.rep = util.str_to_array(graphics.EXPANDED_PADDLE)
+                self.paddle.color = util.tup_to_array(util.str_to_array(graphics.EXPANDED_PADDLE).shape, (colorama.Back.YELLOW, colorama.Fore.WHITE))
+                self.paddle.height, self.paddle.width = self.paddle.rep.shape
+
+            if not self.exp and not self.shrink and not self.shoot:
+                self.paddle.rep = util.str_to_array(graphics.PADDLE)
+                self.paddle.color = util.tup_to_array(util.str_to_array(graphics.PADDLE).shape, (colorama.Back.YELLOW, colorama.Fore.WHITE))
+                self.paddle.height, self.paddle.width = self.paddle.rep.shape
 
 
             ball_multiplier_count = 0
@@ -288,7 +315,7 @@ class Game:
 
         elif ch == config.SHOOT_CHAR:
             if self.shoot:
-                self.shoot_bullet(self.paddle.position+np.array([4.0,-1.0]))
+                self.shoot_bullet(self.paddle.position+self.paddle.width//2)
 
         else:
             self.paddle.move(ch)
@@ -340,6 +367,9 @@ class Game:
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t|| BOUNCE ||\t\tSCORE: ", config.SCORE, "\tBRICKS LEFT: ", config.BRICKS_LEFT, "\tTIME: ", int(ct-st), "\tLIVES: ", "❤️  "*config.LIVES)
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
+        if self.shoot:
+            time_left = max(boost.boost_time for boost in self.__objects["boost_shoot"]) - ct
+            print(colorama.Back.BLACK + colorama.Style.BRIGHT + "Shooting time available: "+ str(time_left))
 
     def detect_collisions(self):
         for pairs in self.__colliders:
