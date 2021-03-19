@@ -73,3 +73,15 @@ BULLET = r"""
 UNBREAKABLE_BRICK = r"""
 |HHHHHHHH|
 """
+
+UFO = r"""
+  _________
+ (_o____ o_)
+ '. \   / .'
+   '.\ /.'
+     '.'
+"""
+
+BOMB = r"""
+(T)
+"""

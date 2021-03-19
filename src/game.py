@@ -11,8 +11,8 @@ import util
 import graphics
 
 from screen import Screen
-from objects import Paddle, Ball, Brick, BrickArray, ExtraBalls
-from boosts import Bullet
+from objects import Paddle, Ball, Brick, BrickArray, ExtraBalls, UFO
+from boosts import Bullet, Bomb
 
 class Game:
     
@@ -25,6 +25,9 @@ class Game:
 
         self.is_over = False
         self.frame_count = 0
+        self.level = 1
+
+        self.ufo = UFO(self)
 
         self.__objects = {
             "ball": [self.ball],
@@ -39,7 +42,9 @@ class Game:
             "boost_thru": [],
             "boost_shoot": [],
             "extra_balls": [],
-            "bullets": []
+            "bullets": [],
+            "bombs": [],
+            "ufo": [self.ufo]
         }
 
         self.__colliders = [
@@ -48,7 +53,9 @@ class Game:
             ("boosts", "paddle", False),
             ("extra_balls", "paddle", True),
             ("extra_balls", "bricks", True),
-            ("bullets", "bricks", False)
+            ("bullets", "bricks", False),
+            ("bombs", "paddle", False),
+            ("ball", "ufo", True)
         ]
 
         self.thru = False
@@ -73,6 +80,7 @@ class Game:
 
         _st = time.time()
         ut = _st
+        bt = _st
 
         while True:
             if self.is_over:
@@ -94,6 +102,11 @@ class Game:
                 ut = _ct
 
             self.paddle.check_update()
+            if self.level == 3:
+                self.ufo.check_update()
+                if _ct > bt + 5:
+                    self.__objects["bombs"].append(Bomb(np.array([self.ufo.position[0] + self.ufo.width//2, self.ufo.position[1]])))
+                    bt = _ct
 
             thru_ball_count = 0
             for boost in self.__objects["boost_thru"]:
@@ -275,8 +288,16 @@ class Game:
             for bullet in self.__objects["bullets"]:
                 self.screen.draw(bullet)
 
+            for bomb in self.__objects["bombs"]:
+                self.screen.draw(bomb)
+
             self.screen.draw(self.paddle)
             self.screen.draw(self.ball)
+            if self.level == 3:
+                if self.ufo.health != 0:
+                    self.screen.draw(self.ufo)
+                else:
+                    self.__objects["ufo"].clear()
             
             self.screen.show()
             self.show_score(_st, _ct)
@@ -294,6 +315,9 @@ class Game:
 
             for bullet in self.__objects["bullets"]:
                 bullet.update()
+
+            for bomb in self.__objects["bombs"]:
+                bomb.update()
 
             for extraball in self.__objects["extra_balls"]:
                 if self.reflect:
@@ -315,16 +339,25 @@ class Game:
 
         elif ch == config.SHOOT_CHAR:
             if self.shoot:
-                self.shoot_bullet(self.paddle.position+self.paddle.width//2)
+                self.shoot_bullet(np.array([self.paddle.position[0]+self.paddle.width//2, self.paddle.position[1]]))
+
+        elif ch == config.PASS_CHAR:
+            self.level +=1
+            config.LEVEL +=1
+            self.__objects["bricks"].clear()
+            self.add_bricks()
+            self.__objects["boosts"].clear()
 
         else:
             self.paddle.move(ch)
+            if self.level == 3:
+                self.ufo.move(ch)
             if self.held:
                 self.ball.move(ch)
         return False
 
     def add_bricks(self):
-        self.__objects["bricks"] += BrickArray().get_items()
+        self.__objects["bricks"] += BrickArray(self).get_items()
         for brick in self.__objects["bricks"]:
             if brick.has_boost:
                 self.__objects["boosts"].append(brick.boost)
@@ -362,19 +395,33 @@ class Game:
             print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t\tGAME OVER, YOU LOST :(")
             self.is_over = True
         if config.BRICKS_LEFT == 0:
-            print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t\tYOU WON :)")
-            self.is_over = True
+            # print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t\tYOU WON :)")
+            self.level += 1
+            if self.level == 4:
+                print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t\tYOU WON :)")
+                self.is_over = True
+            self.start()
+            # self.is_over = True
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
-        print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t|| BOUNCE ||\t\tSCORE: ", config.SCORE, "\tBRICKS LEFT: ", config.BRICKS_LEFT, "\tTIME: ", int(ct-st), "\tLIVES: ", "❤️  "*config.LIVES)
+        print(colorama.Back.BLACK + colorama.Style.BRIGHT + "\t|| BOUNCE ||\t\tSCORE: ", config.SCORE, "\tBRICKS LEFT: ", config.BRICKS_LEFT, "\tTIME: ", int(ct-st), "\tLIVES: ", "❤️  "*config.LIVES, "\tLEVEL: ", int(self.level))
         print(colorama.Back.BLACK + colorama.Style.BRIGHT + "="*config.WIDTH)
         if self.shoot:
             time_left = max(boost.boost_time for boost in self.__objects["boost_shoot"]) - ct
             print(colorama.Back.BLACK + colorama.Style.BRIGHT + "Shooting time available: "+ str(time_left))
 
+        if config.LEVEL == 3:
+            print("UFO health: "+ str(self.ufo.health))
+
     def detect_collisions(self):
         for pairs in self.__colliders:
             for hitter in self.__objects[pairs[0]]:
                 for target in self.__objects[pairs[1]]:
+
+                        if pairs[0] == "bombs":
+                            if hitter.position[1] > config.PADDLE_Y:
+                                for bomb in self.__objects["bombs"]:
+                                    if hitter == bomb:
+                                        self.__objects["bombs"].remove(hitter)
 
                         if pairs[0] == "boosts":
                             if hitter.position[1] > config.PADDLE_Y:
@@ -405,8 +452,15 @@ class Game:
 
                         if pairs[0] == "bullets":
                             self.__objects["bullets"].remove(hitter)
-                                    
 
+                        if pairs[0] == "bombs":
+                            self.__objects["bombs"].remove(hitter)
+                            config.LIVES -+1
+                            config.RESET = [True, True, True]
+
+                        if pairs[1] == "ufo":
+                            self.ufo.health -=1
+                                    
                         if pairs[1] == "bricks":
                             if target.strength != 4:
                                 config.SCORE += 30
@@ -457,7 +511,7 @@ class Game:
                                     else:
                                         hitter.angle_reflect(pos_h[0] - pos_t[0] - 4)
 
-                            if pairs[1] == "paddle":
+                            if pairs[1] == "paddle" or pairs[1] == "ufo":
                                 if not self.grab:
                                     if pos_h[0] == pos_t[0]+4:
                                         hitter.reflect()

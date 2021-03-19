@@ -60,10 +60,10 @@ class Paddle(BarObject):
         if key in self.controls:
             if key == "a":
                 if self.position[0] > 3:
-                    self.position += [-4., 0.]
+                    self.position += [-8., 0.]
             elif key == "d":
                 if self.position[0] < config.WIDTH - 10:
-                    self.position += [4., 0.]
+                    self.position += [8., 0.]
 
     def change(self, rep):
         self.rep = util.str_to_array(rep)
@@ -71,34 +71,34 @@ class Paddle(BarObject):
 
 
 class Brick(Object):
-    def __init__(self, position, strength):
+    def __init__(self, position, strength, game):
         self.strength = strength
         self.active = True
         self.has_boost = False
         self.is_explosive = False
-        # flag = util.randint(1,20)
-        flag = 7
+        flag = util.randint(1,20)
+        # flag = 7
         if flag == 1:
             self.has_boost = True
-            self.boost = boosts.FastBall(np.array([position[0]+3, position[1]]))
+            self.boost = boosts.FastBall(np.array([position[0]+3, position[1]]), game)
         elif flag == 2:
             self.has_boost = True
-            self.boost = boosts.ThruBall(np.array([position[0]+3, position[1]]))
+            self.boost = boosts.ThruBall(np.array([position[0]+3, position[1]]), game)
         elif flag == 3:
             self.has_boost = True
-            self.boost = boosts.BallMultiplier(np.array([position[0]+3, position[1]]))
+            self.boost = boosts.BallMultiplier(np.array([position[0]+3, position[1]]), game)
         elif flag == 4:
             self.has_boost = True
-            self.boost = boosts.ExpandPaddle(np.array([position[0]+3, position[1]]))
+            self.boost = boosts.ExpandPaddle(np.array([position[0]+3, position[1]]), game)
         elif flag == 5:
             self.has_boost = True
-            self.boost = boosts.ShrinkPaddle(np.array([position[0]+3, position[1]]))
+            self.boost = boosts.ShrinkPaddle(np.array([position[0]+3, position[1]]), game)
         elif flag == 6:
             self.has_boost = True
-            self.boost = boosts.PaddleGrab(np.array([position[0]+3, position[1]]))
+            self.boost = boosts.PaddleGrab(np.array([position[0]+3, position[1]]), game)
         elif flag == 7:
             self.has_boost = True
-            self.boost = boosts.ShootBullet(np.array([position[0]+3, position[1]]))
+            self.boost = boosts.ShootBullet(np.array([position[0]+3, position[1]]), game)
         elif flag == 14:
             self.is_explosive = True
 
@@ -132,7 +132,7 @@ class Brick(Object):
 
 
 class BrickArray():
-    def __init__(self):
+    def __init__(self, game):
         self.bricks = []
 
         i=0
@@ -146,10 +146,12 @@ class BrickArray():
                     yf = util.randint(0,1)
                     if yf == 1:
                         s = util.randint(1, 4)
-                        self.bricks.append(Brick(np.array([x,y]), s))
+                        self.bricks.append(Brick(np.array([x,y]), s, game))
                         i += 1
                         if s != 4:
                             count += 1
+                        # print(np.array([x,y]))
+
 
         config.BRICKS_LEFT = count
 
@@ -184,6 +186,8 @@ class CircleObject(Object):
             if config.LIVES != 0:
                 config.RESET[0] = True
                 config.RESET[1] = True
+                if config.LEVEL == 3:
+                    config.RESET[2] = True
 
         # else:
         self.position[0] += self.velocity[0]
@@ -218,7 +222,7 @@ class CircleObject(Object):
 class Ball(CircleObject):
     def __init__(self):
         position = np.array([config.PADDLE_X+4, config.PADDLE_Y-1])
-        velocity = np.array([0,1])
+        velocity = np.array([0,2])
         rep = util.str_to_array(graphics.BALL)
         color = util.tup_to_array(rep.shape, (colorama.Back.BLACK, colorama.Fore.WHITE))
 
@@ -258,3 +262,37 @@ class ExtraBalls():
 
     def get_items(self):
         return self.extraball
+
+
+class UFO_Object(Object):
+    def __init__(self, rep, position, color):
+        super().__init__(rep, position, color)
+
+
+class UFO(UFO_Object):
+    def __init__(self, game):
+        grid = util.str_to_array(graphics.UFO)
+        grid_col = util.tup_to_array(grid.shape, (colorama.Back.YELLOW, colorama.Fore.WHITE))
+        self.init_pos = np.array([game.paddle.get_position()[0], config.PADDLE_Y-35], dtype='float64')
+
+        self.health = 10
+
+        self.controls = ["a", "d"]
+
+        super().__init__(grid, self.init_pos.copy(), grid_col)
+
+    def check_update(self):
+        if config.RESET[2]:
+            self.position = np.array([config.PADDLE_X, config.PADDLE_Y-35], dtype='float64')
+            config.RESET[2] = False
+
+    def move(self, key):
+        if key in self.controls:
+            if key == "a":
+                if self.position[0] > 3:
+                    self.position += [-8., 0.]
+            elif key == "d":
+                if self.position[0] < config.WIDTH - 10:
+                    self.position += [8., 0.]
+
+        

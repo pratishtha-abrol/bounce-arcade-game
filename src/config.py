@@ -28,9 +28,12 @@ FG_COL = colorama.Fore.WHITE
 QUIT_CHAR = "q"
 RELEASE_CHAR = " "
 SHOOT_CHAR = "s"
+PASS_CHAR = "p"
 
 # game config
 LIVES = 5
 SCORE = 0
 BRICKS_LEFT = 0
-RESET = [False, False]
+RESET = [False, False, False]
+LEVEL = 1
+LEVELS = 3

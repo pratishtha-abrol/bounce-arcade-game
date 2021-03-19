@@ -16,6 +16,7 @@ a terminal based game built in python with OOPS concepts
 > - "a" : moves left
 > - "d" : moves right
 > - " " : release ball in case of paddle grab boost
+> - "p" : skip level
 
 ## Boosts:
 
@@ -36,9 +37,20 @@ Note that each boost, except the ball multiplier functions for exactly 10 second
 - Expand and Shrink Paddle:
     Increase and decrease paddle length by 4, respectively
 
+- Paddle Shoot:
+    Allows paddle to shoot bullets
+
+## Levels:
+
+3 levels. The last level is the super level. Press 'p' to skip levels.
+
 ## Exploding Bricks:
 
 Some bricks on the screen may explode on collision, breaking those directlt adjacent to it.
+
+## Falling bricks:
+
+Bricks fall one unit down every 10 seconds into the game. Reset on level completion
 
 ## Collision rules:
 
